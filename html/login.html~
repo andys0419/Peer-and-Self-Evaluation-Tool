@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="login.css">
+    <title> UB CSE Peer Evaluation</title>
+</head>
+<body>
+    <div class="w3-bar w3-black" style="background-color: #100e0e">
+        <a class="school-logo"></a>
+          <img src="icon_UB.png" width="150" height="100" class="d-inline-block align-top" alt="">
+        </a>
+        <a style="font-size:250%">UB CSE Evaluation Form</a>
+    </div>
+
+    <div class="form-group">
+        <div class="form1">
+          <label>Welcome!</label>
+          <input class = "w3-input w3-border" type="text" placeholder="Enter your email address.">
+          <button class="w3-btn w3-dark-grey">Submit</button>
+        </div>
+    </div>
+
+</body>
+</html>
+
