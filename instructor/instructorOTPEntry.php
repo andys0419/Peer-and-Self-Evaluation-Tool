@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
       <?php 
         if (isset($_SESSION['email-entry']) and $_SESSION['email-entry'])
         {
-          echo '<div class="w3-card w3-green"> Successfully sent email to ' . htmlspecialchars($_SESSION['email-entry'][0]) . '<br /> The verification code expires at ' . htmlspecialchars($_SESSION['email-entry'][1]) . '</div>';
+          echo '<div class="w3-card w3-green"> Successfully sent email to ' . htmlspecialchars($_SESSION['email-entry'][0]) . '<br /> The verification code expires in 15 minutes.</div>';
         }
       ?>
       

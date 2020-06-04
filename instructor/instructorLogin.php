@@ -83,18 +83,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     $stmt->bind_param('ssii', $hashed_cookie, $hashed_access_code, $otp_expiration, $id);
     $stmt->execute();
     
-    // now email the access code
-    $human_readable_time = date("h:i a", $otp_expiration);
-    
     mail($email,"Access Code for Teamwork Evaluations", "<h1>Your code is: ".$access_code."</h1>
-        <p>It will expire at ".$human_readable_time."</p>
+        <p>It will expire in 15 minutes.</p>
         </hr>
-        Use it here: ".SITE_HOME."/instructor/instructorOTPEntry.php",
+        Use it here: ".SITE_HOME."instructor/instructorOTPEntry.php",
         'Content-type: text/html; charset=utf-8\r\n'.
-        'From: Teamwork Evaluation Access Code Generator <teamwork@buffalo.edu>');
+        'From: Teamwork Evaluation Access Code Generator <apache@buffalo.edu>');
         
     // redirect to next page and save state to pass over
-    $_SESSION['email-entry'] = array($email, $human_readable_time);
+    $_SESSION['email-entry'] = array($email, $otp_expiration);
     
     http_response_code(302);   
     header("Location: instructorOTPEntry.php");
@@ -127,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
       <form method="post" action="instructorLogin.php">
         <label for="email">Email Address:</label><br />
         <input class = "w3-input w3-border" type="text" id="email" placeholder="UBITname@buffalo.edu" name="email" /><br />
-        <input type="submit" class="w3-btn w3-dark-grey" value="Send Verification Code" />
+        <input type="submit" class="w3-btn w3-dark-grey" value="Send Access Code" />
       </form>
     </div>
 </body>
