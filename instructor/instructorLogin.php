@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
   // store error messages
   if (empty($email))
   {
-    $email_error_message = "Email cannot be blank.";
+    $email_error_message = "Error: Email cannot be blank.";
   }
   
   // now, lookup the email in the database
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
   // check if the email matches and store error messages or get the instructor id
   if ($result->num_rows == 0)
   {
-    $email_error_message2 = "Email Address Not List of Registered Instructors.";
+    $email_error_message2 = "Error: Email Address Not in List of Registered Instructors.";
   }
   else
   {
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     $hashed_access_code = password_hash($access_code, PASSWORD_BCRYPT);
     
     // generate the expiration time
-    $otp_expiration = time()+ OTP_EXPIRATION_SECONDS;
+    $otp_expiration = time() + OTP_EXPIRATION_SECONDS;
     
     // generate the inital authorization cookie
     $initial_auth_cookie = "Add";
@@ -84,14 +84,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     $stmt->execute();
     
     // now email the access code
-    $human_readable_time = date("h:i a", $expiration_time);
+    $human_readable_time = date("h:i a", $otp_expiration);
     
-    mail($email,"Teamwork Evaluation Form Access Code", "<h1>Your code is: ".$access_code."</h1>
+    mail($email,"Access Code for Teamwork Evaluations", "<h1>Your code is: ".$access_code."</h1>
         <p>It will expire at ".$human_readable_time."</p>
         </hr>
-        Use it here: ".SITE_HOME."instructorOTPEntry.php",
+        Use it here: ".SITE_HOME."/instructor/instructorOTPEntry.php",
         'Content-type: text/html; charset=utf-8\r\n'.
-        'From: Teamwork Evaluation Access Code Generator <apache@buffalo.edu>');
+        'From: Teamwork Evaluation Access Code Generator <teamwork@buffalo.edu>');
         
     // redirect to next page and save state to pass over
     $_SESSION['email-entry'] = array($email, $human_readable_time);
