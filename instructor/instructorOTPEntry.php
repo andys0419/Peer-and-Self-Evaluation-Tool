@@ -50,10 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
       
       <br />
       <br />
-      <p>Please enter the verification code sent to your email.</p><br />
+      <p>Please enter the access code sent to your email.</p><br />
       <span class="w3-red"></span>
       <form method="post" action="instructorOTPEntry.php">
-        <label for="otp">Verification Code:</label><br />
+        <label for="otp">Access Code:</label><br />
         <input class = "w3-input w3-border" type="text" id="otp" placeholder="#######" name="otp" /><br />
         <input type="submit" class="w3-btn w3-dark-grey" value="Submit Access Code" />
         <a href="instructorLogin.php"><button type='button' class="w3-button w3-dark-grey" />Don't have a valid code?</button></a>
