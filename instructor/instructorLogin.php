@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
   $stmt->bind_param('s', $email);
   $stmt->execute();
   $result = $stmt->get_result();
-  $result->fetch_all();
+  $id = ($result->fetch_all(MYSQLI_NUM))[0];
   
   // check if the email matches and store error messages
   $email_error_message2 = "";
@@ -53,6 +53,32 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     $email_error_message2 = "Email Address Not List of Registered Instructors.";
   }
   
+  // skip over if errors exist
+  if (!$email_error_message and !$email_error_message2)
+  {
+    
+    // generate the access code
+    $access_code = random_digits(7);
+    
+    // hash the password
+    $hashed_access_code = password_hash($access_code, PASSWORD_BCRYPT);
+    
+    // generate the expiration time
+    $otp_expiration = time()+ OTP_EXPIRATION_SECONDS;
+    
+    // generate the inital authorization cookie
+    $initial_auth_cookie = "Add";
+    
+    // hash the initial authorization cookie
+    $hashed_cookie = hash_pbkdf2("sha256", $initial_auth_cookie, SESSIONS_SALT, PBKDF2_ITERS);
+    
+    // store the access code, expiration, and authorization cookie into the database
+    $stmt = $con->prepare('UPDATE instructors SET init_auth_id=?, otp=?, otp_expiration=? WHERE id=?');
+    $stmt->bind_param('ssii', $hashed_cookie, $hashed_access_code, $otp_expiration, $id);
+    $stmt->execute();
+    
+    
+  }
   
 }
 
