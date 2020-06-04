@@ -14,12 +14,12 @@ require "../lib/random.php";
 require "../lib/database.php";
 require "../lib/constants.php";
 
-// connect to the database
-$con = connectToDatabase();
-
 // handle email submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
+  
+  // connect to the database
+  $con = connectToDatabase();
   
   // make sure the email submission is set
   if (!isset($_POST['email']))
@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         'From: Teamwork Evaluation Access Code Generator <apache@buffalo.edu>');
         
     // redirect to next page and save state to pass over
-    $_SESSION['flash'] = array($email, $human_readable_time);
+    $_SESSION['email-entry'] = array($email, $human_readable_time);
     
     http_response_code(302);   
     header("Location: instructorOTPEntry.php");
@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
       <form method="post" action="instructorLogin.php">
         <label for="email">Email Address:</label><br />
         <input class = "w3-input w3-border" type="text" id="email" placeholder="UBITname@buffalo.edu" name="email" /><br />
-        <input type="submit" class="w3-btn w3-dark-grey" value="Send Access Code" />
+        <input type="submit" class="w3-btn w3-dark-grey" value="Send Verification Code" />
       </form>
     </div>
 </body>
