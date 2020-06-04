@@ -47,12 +47,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
   $stmt->bind_param('s', $email);
   $stmt->execute();
   $result = $stmt->get_result();
-  $id = ($result->fetch_all(MYSQLI_NUM))[0];
+  $data = $result->fetch_all(MYSQLI_NUM);
   
-  // check if the email matches and store error messages
+  // check if the email matches and store error messages or get the instructor id
   if ($result->num_rows == 0)
   {
     $email_error_message2 = "Email Address Not List of Registered Instructors.";
+  }
+  else
+  {
+    $id = $data[0];
   }
   
   // skip over if errors exist
