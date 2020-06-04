@@ -77,6 +77,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     $stmt->bind_param('ssii', $hashed_cookie, $hashed_access_code, $otp_expiration, $id);
     $stmt->execute();
     
+    // now email the access code
+    $human_readable_time = date("h:i a", $expiration_time);
+    
+    mail($email,"Teamwork Evaluation Form Access Code", "<h1>Your code is: ".$access_code."</h1>
+        <p>It will expire at ".$human_readable_time."</p>
+        </hr>
+        Use it here: ".SITE_HOME."instructorOTPEntry.php",
+        'Content-type: text/html; charset=utf-8\r\n'.
+        'From: Teamwork Evaluation Access Code Generator <apache@buffalo.edu>');
+    
     
   }
   
