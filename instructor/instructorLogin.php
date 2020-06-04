@@ -119,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     </div>
     
     <div class="form-group">
-      <p>Welcome! Please enter your UB email address in order to receive a access code to login.</p><br />
+      <p>Welcome! Please enter your UB email address in order to receive an access code to login.</p><br />
       <span class="w3-red"><?php if ($email_error_message) {echo "$email_error_message";} elseif ($email_error_message2) {echo "$email_error_message2";} ?></span>
       <form method="post" action="instructorLogin.php">
         <label for="email">Email Address:</label><br />
