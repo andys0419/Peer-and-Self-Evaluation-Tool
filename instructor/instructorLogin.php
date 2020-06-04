@@ -14,6 +14,10 @@ require "../lib/random.php";
 require "../lib/database.php";
 require "../lib/constants.php";
 
+// define needed variables
+$email_error_message = "";
+$email_error_message2 = "";
+
 // handle email submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
@@ -30,10 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
   }
   
   // make sure the email is not just whitespace
-  $email = trim($_POST['email']));
+  $email = trim($_POST['email']);
   
   // store error messages
-  $email_error_message = "";
   if (empty($email))
   {
     $email_error_message = "Email cannot be blank.";
@@ -47,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
   $id = ($result->fetch_all(MYSQLI_NUM))[0];
   
   // check if the email matches and store error messages
-  $email_error_message2 = "";
   if ($result->num_rows == 0)
   {
     $email_error_message2 = "Email Address Not List of Registered Instructors.";
@@ -111,13 +113,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 </head>
 <body>
     <div class="w3-bar w3-black" style="background-color: #100e0e">
-      <img src="logo_UB.png" width="150" height="100" class="d-inline-block align-top" alt="UB Logo">
+      <img src="../images/logo_UB.png" width="150" height="100" class="d-inline-block align-top" alt="UB Logo">
       <p style="font-size:250%;display:inline-block" >UB CSE Peer Evaluation (Instructor Login)</p>
     </div>
     
     <div class="form-group">
       <p>Welcome! Please enter your UB email address in order to receive an access code to login.</p><br />
-      <span class="w3-red"><?php if ($email_error_message) {echo "$email_error_message"} elseif ($email_error_message2) {echo "$email_error_message2"} ?></span>
+      <span class="w3-red"><?php if ($email_error_message) {echo "$email_error_message";} elseif ($email_error_message2) {echo "$email_error_message2";} ?></span>
       <form method="post" action="instructorLogin.php">
         <label for="email">Email Address:</label><br />
         <input class = "w3-input w3-border" type="text" id="email" placeholder="UBITname@buffalo.edu" name="email" /><br />

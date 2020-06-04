@@ -35,16 +35,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 </head>
 <body>
     <div class="w3-bar w3-black" style="background-color: #100e0e">
-      <img src="logo_UB.png" width="150" height="100" class="d-inline-block align-top" alt="UB Logo">
+      <img src="../images/logo_UB.png" width="150" height="100" class="d-inline-block align-top" alt="UB Logo">
       <p style="font-size:250%;display:inline-block" >UB CSE Peer Evaluation (Instructor Login)</p>
     </div>
     
     <div class="form-group">
     
       <?php 
-        if (isset($_SESSION['email-entry'] and $_SESSION['email-entry']))
+        if (isset($_SESSION['email-entry']) and $_SESSION['email-entry'])
         {
-          echo "<div class=\"w3-card w3-green\">Successfully sent email to $_SESSION['email-entry'][0]<br /> The verification code expires at $_SESSION['email-entry'][1]</div>"
+          echo '<div class="w3-card w3-green"> Successfully sent email to ' . htmlspecialchars($_SESSION['email-entry'][0]) . '<br /> The verification code expires at ' . htmlspecialchars($_SESSION['email-entry'][1]) . '</div>';
         }
       ?>
       
