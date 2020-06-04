@@ -87,10 +87,42 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         'Content-type: text/html; charset=utf-8\r\n'.
         'From: Teamwork Evaluation Access Code Generator <apache@buffalo.edu>');
         
-     // header("Location: emailConfirmation.php"); /* Redirect browser to a test link*/
- // exit();
+    // redirect to next page and save state to pass over
+    $_SESSION['flash'] = array($email, $human_readable_time);
+    
+    http_response_code(302);   
+    header("Location: instructorOTPEntry.php");
+    exit();
     
   }
   
 }
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../styles/login.css">
+    <title>UB CSE Peer Evaluation :: Instructor Login</title>
+</head>
+<body>
+    <div class="w3-bar w3-black" style="background-color: #100e0e">
+      <img src="logo_UB.png" width="150" height="100" class="d-inline-block align-top" alt="UB Logo">
+      <p style="font-size:250%;display:inline-block" >UB CSE Peer Evaluation (Instructor Login)</p>
+    </div>
+    
+    <div class="form-group">
+      <p>Welcome! Please enter your UB email address in order to receive an access code to login.</p><br />
+      <span class="w3-red"><?php if ($email_error_message) {echo "$email_error_message"} elseif ($email_error_message2) {echo "$email_error_message2"} ?></span>
+      <form method="post" action="instructorLogin.php">
+        <label for="email">Email Address:</label><br />
+        <input class = "w3-input w3-border" type="text" id="email" placeholder="UBITname@buffalo.edu" name="email" /><br />
+        <input type="submit" class="w3-btn w3-dark-grey" value="Send Access Code" />
+      </form>
+    </div>
+</body>
+</html>
