@@ -47,7 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
   $stmt->bind_param('s', $email);
   $stmt->execute();
   $result = $stmt->get_result();
-  $data = $result->fetch_all(MYSQLI_NUM);
+  $data = $result->fetch_all(MYSQLI_ASSOC);
+  $id = NULL;
   
   // check if the email matches and store error messages or get the instructor id
   if ($result->num_rows == 0)
@@ -56,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
   }
   else
   {
-    $id = $data[0];
+    $id = $data[0]['id'];
   }
   
   // skip over if errors exist
@@ -73,18 +74,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     $otp_expiration = time() + OTP_EXPIRATION_SECONDS;
     
     // generate the inital authorization cookie
-    $initial_auth_cookie = "Add";
+    $initial_auth_cookie = random_bytes(TOKEN_SIZE);
     
     // hash the initial authorization cookie
     $hashed_cookie = hash_pbkdf2("sha256", $initial_auth_cookie, SESSIONS_SALT, PBKDF2_ITERS);
     
-    //store the initial authorization cookie for 15 minutes.
-    setCookie('init-auth', $hashed_cookie, time()+900);
-    // store the access code, expiration, and authorization cookie into the database
-    $stmt = $con->prepare('UPDATE instructors SET init_auth_id=?, otp=?, otp_expiration=? WHERE id=?');
-    $stmt->bind_param('ssii', $hashed_cookie, $hashed_access_code, $otp_expiration, $id);
-    $stmt->execute();
-    
+    // send the email with the access code
     mail($email,"Access Code for Teamwork Evaluations", "<h1>Your code is: ".$access_code."</h1>
         <p>It will expire in 15 minutes.</p>
         </hr>
@@ -92,9 +87,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         'Content-type: text/html; charset=utf-8\r\n'.
         'From: Teamwork Evaluation Access Code Generator <apache@buffalo.edu>');
         
-    // redirect to next page and save state to pass over
-    $_SESSION['email-entry'] = array($email, $otp_expiration);
+    // set the initial authorization cookie for 1 hour
+    setcookie(INIT_AUTH_COOKIE_NAME, bin2hex($initial_auth_cookie), time() + INIT_AUTH_TOKEN_EXPIRATION_SECONDS);
     
+    // store the access code, expiration, and authorization cookie into the database
+    $stmt = $con->prepare('UPDATE instructors SET init_auth_id=?, otp=?, otp_expiration=? WHERE id=?');
+    $stmt->bind_param('ssii', $hashed_cookie, $hashed_access_code, $otp_expiration, $id);
+    $stmt->execute();
+        
+    // redirect to the next page    
     http_response_code(302);   
     header("Location: instructorOTPEntry.php");
     exit();
