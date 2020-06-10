@@ -71,8 +71,8 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') and ($instructor->init_auth_status !=
       // now, generate the CSRF token
       $csrf_token = bin2hex(random_bytes(TOKEN_SIZE));
       
-      // store the new tokens and expiration dates in the database
-      $stmt = $con->prepare('UPDATE instructors SET session_token=?, session_expiration=?, csrf_token=? WHERE id=?');
+      // store the new tokens and expiration dates in the database, NULL out the initial authorization id
+      $stmt = $con->prepare('UPDATE instructors SET init_auth_id=NULL, session_token=?, session_expiration=?, csrf_token=? WHERE id=?');
       $stmt->bind_param('sisi', $hashed_cookie, $session_expiration, $csrf_token, $instructor->id);
       $stmt->execute();
       
