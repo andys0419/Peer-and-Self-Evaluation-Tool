@@ -163,4 +163,5 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') and ($instructor->init_auth_status !=
         <a href="instructorLogin.php"><button type='button' class="w3-button w3-dark-grey" />Don't have a valid code?</button></a>
       </form>
     </div>
+</body>
 </html>

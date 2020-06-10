@@ -34,13 +34,19 @@ $instructor->check_session($con, 0);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../styles/nav-header.css">
     <title>UB CSE Peer Evaluation :: Dashboard</title>
-<ul> 
-  <li><a href="dashboard.php">Home</a></li>
-  <li><a href="surveys.php">Surveys</a></li>
-  <li><a href="question-banks.php">Question Banks</a></li>
-  <li><a href="courses.php">Courses</a></li>
-  <li><a href="logout.php">Logout</a></li> 
-</ul>
 </head>
 <body>
-
+  <div class="w3-container">
+        <img src="../images/logo_UB.png" width="150" height="100" alt="UB Logo">
+        <p style="font-size:250%;display:inline-block" >UB CSE Peer Evaluation</p>
+  </div>
+  <div class="w3-bar w3-blue">
+    <a href="dashboard.php" class="w3-bar-item w3-button w3-mobile">Home</a>
+    <a href="surveys.php" class="w3-bar-item w3-button w3-mobile">Surveys</a>
+    <a href="question-banks.php" class="w3-bar-item w3-button w3-mobile">Question Banks</a>
+    <a href="courses.php" class="w3-bar-item w3-button w3-mobile">Courses</a>
+    <a href="logout.php" class="w3-bar-item w3-button w3-mobile w3-right">Logout</a>
+    <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
+  </div>
+</body>
+</html>
