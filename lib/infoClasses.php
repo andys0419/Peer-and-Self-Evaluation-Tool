@@ -187,6 +187,11 @@ class InstructorInfo
     {
       $this->session_status = 1;
       
+      // now null out the session token field
+      $stmt = $db_connection->prepare('UPDATE instructors SET session_token=NULL WHERE id=?');
+      $stmt->bind_param('i', $this->id);
+      $stmt->execute();
+      
       if ($action == 0)
       {
         http_response_code(302);   
