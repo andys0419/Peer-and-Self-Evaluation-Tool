@@ -26,8 +26,8 @@ $instructor->check_init_auth($con);
 $blank_otp = false;
 $invalid_otp = false;
 
-// handle access code submissions
-if ($_SERVER['REQUEST_METHOD'] == 'POST')
+// handle access code submissions only if the initial authorization token exists
+if (($_SERVER['REQUEST_METHOD'] == 'POST') and ($instructor->init_auth_status != 1))
 {
   
   // make sure the access code has been sent
@@ -85,16 +85,51 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     <div class="form-group">
     
       <?php 
-        if (isset($_SESSION['email-entry']) and $_SESSION['email-entry'])
+        if ($_SERVER['REQUEST_METHOD'] == 'GET')
         {
-          echo '<div class="w3-card w3-green"> Successfully sent email to ' . htmlspecialchars($_SESSION['email-entry'][0]) . '<br /> The access code expires in 15 minutes.</div>';
+          if ($instructor->init_auth_status == 1)
+          {
+            echo '<div class="w3-card w3-red"> Error: Please <a href="instructorLogin.php">request an access code</a> first.</div>';
+          }
+          else if ($instructor->otp_status == 1)
+          {
+            echo '<div class="w3-card w3-red"> Error: Your access code has expired. Please <a href="instructorLogin.php">request a new one</a>.</div>';
+          }
+          else
+          {
+            echo '<div class="w3-card w3-green"> Successfully sent email to ' . htmlspecialchars($instructor->email) . '<br /> The access code expires in 15 minutes.</div>';
+          }
         }
       ?>
       
       <br />
       <br />
-      <p>Please enter the access code sent to your email.</p><br />
-      <span class="w3-red"></span>
+      <p>Please enter the access code that was sent to your email.</p><br />
+      <span class="w3-red">
+      
+        <?php 
+          if ($_SERVER['REQUEST_METHOD'] == 'POST')
+          {
+            if ($instructor->init_auth_status == 1)
+            {
+              echo 'Error: Please <a href="instructorLogin.php">request an access code</a> first.';
+            }
+            else if ($instructor->otp_status == 1)
+            {
+              echo 'Error: Your access code has expired. Please <a href="instructorLogin.php">request a new one</a>.';
+            }
+            else if ($blank_otp)
+            {
+              echo 'Error: The access code field cannot be blank.';
+            }
+            else if ($invalid_otp)
+            {
+              echo 'Error: The entered access code was incorrect. Please check your typing for any mistakes.';
+            }
+          }
+        ?>
+      
+      </span>
       <form method="post" action="instructorOTPEntry.php">
         <label for="otp">Access Code:</label><br />
         <input class = "w3-input w3-border" type="text" id="otp" placeholder="#######" name="otp" /><br />
