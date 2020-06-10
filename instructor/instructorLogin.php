@@ -10,9 +10,9 @@ ini_set("error_log", "~/php-error.log");
 session_start();
 
 // bring in required code
-require "../lib/random.php";
-require "../lib/database.php";
-require "../lib/constants.php";
+require_once "../lib/random.php";
+require_once "../lib/database.php";
+require_once "../lib/constants.php";
 
 // define needed variables
 $email_error_message = "";

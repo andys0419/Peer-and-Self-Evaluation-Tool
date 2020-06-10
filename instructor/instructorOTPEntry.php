@@ -10,15 +10,25 @@ ini_set("error_log", "~/php-error.log");
 session_start();
 
 // bring in required code
-require "../lib/database.php";
-require "../lib/constants.php";
+require_once "../lib/database.php";
+require_once "../lib/constants.php";
+require_once "../lib/infoClasses.php";
+
+
+// query information about the requester
+$con = connectToDatabase();
+
+// try to get information about the instructor who made this request by checking the intial authorization token
+$instructor = new InstructorInfo();
+$instructor->check_init_auth($con);
+
 
 // handle access code submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
   
   // connect to the database
-  $con = connectToDatabase();
+  
   
 }
 ?>
