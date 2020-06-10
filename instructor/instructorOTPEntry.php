@@ -18,8 +18,10 @@ require_once "../lib/infoClasses.php";
 // query information about the requester
 $con = connectToDatabase();
 
-// try to get information about the instructor who made this request by checking the intial authorization token
+// try to get information about the instructor who made this request by checking the intial authorization token and the session cookie
+// redirect to home page if already logged in
 $instructor = new InstructorInfo();
+$instructor->check_session($con, 1);
 $instructor->check_init_auth($con);
 
 // set basic error flags

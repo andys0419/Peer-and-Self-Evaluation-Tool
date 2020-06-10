@@ -13,6 +13,16 @@ session_start();
 require_once "../lib/random.php";
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
+require_once "../lib/infoClasses.php";
+
+
+// query information about the requester
+$con = connectToDatabase();
+
+// try to get information about the instructor who made this request by checking the session cookie
+// redirect to home page if already logged in
+$instructor = new InstructorInfo();
+$instructor->check_session($con, 1);
 
 // define needed variables
 $email_error_message = "";
@@ -21,9 +31,6 @@ $email_error_message2 = "";
 // handle email submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
-  
-  // connect to the database
-  $con = connectToDatabase();
   
   // make sure the email submission is set
   if (!isset($_POST['email']))
