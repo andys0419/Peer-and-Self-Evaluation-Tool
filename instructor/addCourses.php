@@ -38,6 +38,7 @@
     <input type="submit" name="add" value="Add">
 
 </form>
+</html>
 
 
 <?php
