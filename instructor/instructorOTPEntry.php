@@ -22,14 +22,47 @@ $con = connectToDatabase();
 $instructor = new InstructorInfo();
 $instructor->check_init_auth($con);
 
+// set basic error flags
+$blank_otp = false;
+$invalid_otp = false;
 
 // handle access code submissions
 if ($_SERVER['REQUEST_METHOD'] == 'POST')
 {
   
-  // connect to the database
+  // make sure the access code has been sent
+  if (!isset($_POST['otp']))
+  {
+    http_response_code(400);
+    echo "Bad Request: Missing parmeters.";
+    exit();
+  }
   
+  // make sure the access code is not just whitespace
+  $supplied_otp = trim($_POST['otp']);
   
+  // update error flag
+  if (empty($supplied_otp))
+  {
+    $blank_otp = true;
+  }
+  
+  // continue only if the access code has not expired and the entered access code was not blank
+  if ($instructor->otp_status == 0 and !$blank_otp)
+  {
+    
+    // now make sure the entered password is valid
+    if (password_verify($supplied_otp, $instructor->otp))
+    {
+      echo "passcode good";
+    }
+    else
+    {
+      $invalid_otp = true;
+    }
+    
+  }
+
 }
 ?>
 <!DOCTYPE html>
