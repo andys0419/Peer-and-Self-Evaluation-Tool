@@ -199,6 +199,8 @@ class InstructorInfo
         echo "Forbidden";
         exit();
       }
+      
+      return;
     }
     
     // finally last redirect action
