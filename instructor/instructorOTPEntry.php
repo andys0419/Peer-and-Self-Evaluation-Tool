@@ -74,6 +74,11 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') and ($instructor->init_auth_status !=
       $stmt->bind_param('sisi', $hashed_cookie, $session_expiration, $csrf_token, $instructor->id);
       $stmt->execute();
       
+      // redirect the instructor to the next page
+      http_response_code(302);   
+      header("Location: dashboard.php");
+      exit();
+      
     }
     else
     {
