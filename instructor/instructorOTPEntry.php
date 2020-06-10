@@ -66,9 +66,12 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') and ($instructor->init_auth_status !=
       $session_expiration = time() + SESSION_TOKEN_EXPIRATION_SECONDS;
       setcookie(SESSION_COOKIE_NAME, bin2hex($session_cookie), $session_expiration);
       
+      // now, generate the CSRF token
+      $csrf_token = bin2hex(random_bytes(TOKEN_SIZE));
+      
       // store the new tokens and expiration dates in the database
       $stmt = $con->prepare('UPDATE instructors SET session_token=?, session_expiration=?, csrf_token=? WHERE id=?');
-      $stmt->bind_param('sisi', $hashed_cookie, $session_expiration, $hashed_cookie, $instructor->id);
+      $stmt->bind_param('sisi', $hashed_cookie, $session_expiration, $csrf_token, $instructor->id);
       $stmt->execute();
       
     }
