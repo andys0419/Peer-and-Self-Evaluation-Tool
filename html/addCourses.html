@@ -35,6 +35,11 @@
     <label for="year">Course Year:</label><br>
     <input type="text" id="year" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-year" placeholder="e.g, 2020"><br>
 
-    <input type="submit" name="add" value="Add">
+    <input type="submit" onclick="document.getElementsByClassName('popup')" name="add" value="Add">
+
+    <div class="popup">
+        <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+        Your course has been successfully added!
+    </div>
 
 </form>
