@@ -54,7 +54,23 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') and ($instructor->init_auth_status !=
     // now make sure the entered password is valid
     if (password_verify($supplied_otp, $instructor->otp))
     {
-      echo "passcode good";
+      
+      // password good, so start generating needed tokens
+      // first, generate the session cookie
+      $session_cookie = random_bytes(TOKEN_SIZE);
+      
+      // hash the initial authorization cookie
+      $hashed_cookie = hash_pbkdf2("sha256", $session_cookie, SESSIONS_SALT, PBKDF2_ITERS);
+      
+      // set the initial authorization cookie for 12 hours
+      $session_expiration = time() + SESSION_TOKEN_EXPIRATION_SECONDS;
+      setcookie(SESSION_COOKIE_NAME, bin2hex($session_cookie), $session_expiration);
+      
+      // store the new tokens and expiration dates in the database
+      $stmt = $con->prepare('UPDATE instructors SET session_token=?, session_expiration=?, csrf_token=? WHERE id=?');
+      $stmt->bind_param('sisi', $hashed_cookie, $session_expiration, $hashed_cookie, $instructor->id);
+      $stmt->execute();
+      
     }
     else
     {

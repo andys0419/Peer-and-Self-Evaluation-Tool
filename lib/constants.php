@@ -6,4 +6,6 @@ define("PBKDF2_ITERS", 50000);
 define("TOKEN_SIZE", 32);
 define("INIT_AUTH_TOKEN_EXPIRATION_SECONDS", 60 * 60);
 define("INIT_AUTH_COOKIE_NAME", "init-auth");
+define("SESSION_COOKIE_NAME", "session-token");
+define("SESSION_TOKEN_EXPIRATION_SECONDS", 60 * 60 * 12);
 ?>
