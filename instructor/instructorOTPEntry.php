@@ -10,16 +10,85 @@ ini_set("error_log", "~/php-error.log");
 session_start();
 
 // bring in required code
-require "../lib/database.php";
-require "../lib/constants.php";
+require_once "../lib/database.php";
+require_once "../lib/constants.php";
+require_once "../lib/infoClasses.php";
 
-// handle access code submissions
-if ($_SERVER['REQUEST_METHOD'] == 'POST')
+
+// query information about the requester
+$con = connectToDatabase();
+
+// try to get information about the instructor who made this request by checking the intial authorization token and the session cookie
+// redirect to home page if already logged in
+$instructor = new InstructorInfo();
+$instructor->check_session($con, 1);
+$instructor->check_init_auth($con);
+
+// set basic error flags
+$blank_otp = false;
+$invalid_otp = false;
+
+// handle access code submissions only if the initial authorization token exists
+if (($_SERVER['REQUEST_METHOD'] == 'POST') and ($instructor->init_auth_status != 1))
 {
   
-  // connect to the database
-  $con = connectToDatabase();
+  // make sure the access code has been sent
+  if (!isset($_POST['otp']))
+  {
+    http_response_code(400);
+    echo "Bad Request: Missing parmeters.";
+    exit();
+  }
   
+  // make sure the access code is not just whitespace
+  $supplied_otp = trim($_POST['otp']);
+  
+  // update error flag
+  if (empty($supplied_otp))
+  {
+    $blank_otp = true;
+  }
+  
+  // continue only if the access code has not expired and the entered access code was not blank
+  if ($instructor->otp_status == 0 and !$blank_otp)
+  {
+    
+    // now make sure the entered password is valid
+    if (password_verify($supplied_otp, $instructor->otp))
+    {
+      
+      // password good, so start generating needed tokens
+      // first, generate the session cookie
+      $session_cookie = random_bytes(TOKEN_SIZE);
+      
+      // hash the initial authorization cookie
+      $hashed_cookie = hash_pbkdf2("sha256", $session_cookie, SESSIONS_SALT, PBKDF2_ITERS);
+      
+      // set the initial authorization cookie for 12 hours
+      $session_expiration = time() + SESSION_TOKEN_EXPIRATION_SECONDS;
+      setcookie(SESSION_COOKIE_NAME, bin2hex($session_cookie), $session_expiration);
+      
+      // now, generate the CSRF token
+      $csrf_token = bin2hex(random_bytes(TOKEN_SIZE));
+      
+      // store the new tokens and expiration dates in the database, NULL out the initial authorization id
+      $stmt = $con->prepare('UPDATE instructors SET init_auth_id=NULL, session_token=?, session_expiration=?, csrf_token=? WHERE id=?');
+      $stmt->bind_param('sisi', $hashed_cookie, $session_expiration, $csrf_token, $instructor->id);
+      $stmt->execute();
+      
+      // redirect the instructor to the next page
+      http_response_code(302);   
+      header("Location: dashboard.php");
+      exit();
+      
+    }
+    else
+    {
+      $invalid_otp = true;
+    }
+    
+  }
+
 }
 ?>
 <!DOCTYPE html>
@@ -42,16 +111,51 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     <div class="form-group">
     
       <?php 
-        if (isset($_SESSION['email-entry']) and $_SESSION['email-entry'])
+        if ($_SERVER['REQUEST_METHOD'] == 'GET')
         {
-          echo '<div class="w3-card w3-green"> Successfully sent email to ' . htmlspecialchars($_SESSION['email-entry'][0]) . '<br /> The access code expires in 15 minutes.</div>';
+          if ($instructor->init_auth_status == 1)
+          {
+            echo '<div class="w3-card w3-red"> Error: Please <a href="instructorLogin.php">request an access code</a> first.</div>';
+          }
+          else if ($instructor->otp_status == 1)
+          {
+            echo '<div class="w3-card w3-red"> Error: Your access code has expired. Please <a href="instructorLogin.php">request a new one</a>.</div>';
+          }
+          else
+          {
+            echo '<div class="w3-card w3-green"> Successfully sent email to ' . htmlspecialchars($instructor->email) . '<br /> The access code expires in 15 minutes.</div>';
+          }
         }
       ?>
       
       <br />
       <br />
-      <p>Please enter the access code sent to your email.</p><br />
-      <span class="w3-red"></span>
+      <p>Please enter the access code that was sent to your email.</p><br />
+      <span class="w3-red">
+      
+        <?php 
+          if ($_SERVER['REQUEST_METHOD'] == 'POST')
+          {
+            if ($instructor->init_auth_status == 1)
+            {
+              echo 'Error: Please <a href="instructorLogin.php">request an access code</a> first.';
+            }
+            else if ($instructor->otp_status == 1)
+            {
+              echo 'Error: Your access code has expired. Please <a href="instructorLogin.php">request a new one</a>.';
+            }
+            else if ($blank_otp)
+            {
+              echo 'Error: The access code field cannot be blank.';
+            }
+            else if ($invalid_otp)
+            {
+              echo 'Error: The entered access code was incorrect. Please check your typing for any mistakes.';
+            }
+          }
+        ?>
+      
+      </span>
       <form method="post" action="instructorOTPEntry.php">
         <label for="otp">Access Code:</label><br />
         <input class = "w3-input w3-border" type="text" id="otp" placeholder="#######" name="otp" /><br />
@@ -59,4 +163,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         <a href="instructorLogin.php"><button type='button' class="w3-button w3-dark-grey" />Don't have a valid code?</button></a>
       </form>
     </div>
+</body>
 </html>
