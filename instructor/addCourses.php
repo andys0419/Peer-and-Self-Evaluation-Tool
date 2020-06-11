@@ -85,8 +85,8 @@ if(isset($_POST['add'])) {
 
     if (!$error) {
 
-        if (isset($course_code) && isset($course_name) && isset($semester) && isset($course_year)) {
-        $stmt = $con -> prepare("INSERT INTO TestCourses (course_code,course_name,course_semester,course_year) VALUES ($course_code, $course_name, $semester, $course_code)");
+        if (isset($_POST[$course_code]) && isset($_POST[$course_name]) && isset($_POST[$semester]) && isset($_POST[$course_year]))  {
+        $stmt = $con -> prepare("INSERT INTO TestCourses (course_code,course_name,course_semester,course_year) VALUES ($_POST[$course_code], $_POST[$course_name], $_POST[$semester], $_POST[$course_year])");
         $stmt -> execute();
         echo "<script>alert('Your course was added sucessfully!');</script>";
         exit();
