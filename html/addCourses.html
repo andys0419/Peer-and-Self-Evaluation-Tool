@@ -16,7 +16,7 @@
     </div>
 
 <!--------form action="addCourses.php" once linked-------------------->
-<form action="index.php" method ="post" class="w3-container">
+<form action="addCourses.php" method ="post" class="w3-container">
     <label for="course-code">Course Code:</label><br>
     <input type="text" maxlength=6 id="course-code" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-code" placeholder="e.g, CSE442"><br>
 
