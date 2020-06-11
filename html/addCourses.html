@@ -16,9 +16,9 @@
     </div>
 
 <!--------form action="addCourses.php" once linked-------------------->
-<form action="addCourses.html" method ="post" class="w3-container">
+<form action="index.php" method ="post" class="w3-container">
     <label for="course-code">Course Code:</label><br>
-    <input type="text" id="course-code" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-code" placeholder="e.g, CSE442"><br>
+    <input type="text" maxlength=6 id="course-code" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-code" placeholder="e.g, CSE442"><br>
 
     <label for="course-name">Course Name:</label><br>
     <input type="text" id="course-name" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-name" placeholder="e.g, Software Engineering Concepts"><br>
@@ -33,8 +33,9 @@
     </select><br><br>
 
     <label for="year">Course Year:</label><br>
-    <input type="text" id="year" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-year" placeholder="e.g, 2020"><br>
+    <input type="text" maxlength="4" id="year" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-year" placeholder="e.g, 2020"><br>
 
-    <input type="submit" onclick="alert('Your course was added successfully!')" name="add" value="Add">
+    <input type="submit" name="add" value="Add">
 
 </form>
+</html>
