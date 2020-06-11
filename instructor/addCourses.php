@@ -88,6 +88,8 @@ if(isset($_POST['add'])) {
         $stmt -> execute();
         exit();
         echo "<script>alert('Your course was added sucessfully!');</script>";
+    }
+}
 
 ?>
 <!DOCTYPE html>
