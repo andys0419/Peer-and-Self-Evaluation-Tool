@@ -5,8 +5,12 @@ CREATE TABLE `course` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `code` TEXT NOT NULL,
   `name` TEXT NOT NULL,
+  `semester` INT NOT NULL,
+  `year` INT NOT NULL,
+  `instructor_id` INT NOT NULL,
   
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  CONSTRAINT `instructor_id_constraint` FOREIGN KEY (`instructor_id`) REFERENCES `instructors` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
   
 ) ENGINE=InnoDB;
 
@@ -72,10 +76,15 @@ CREATE TABLE `instructors` (
   `init_auth_id` VARCHAR(255),
   `otp` TEXT,
   `otp_expiration` INT,
+  `session_token` VARCHAR(255),
+  `session_expiration` INT,
+  `csrf_token` VARCHAR(255),
   
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
-  UNIQUE KEY `init_auth` (`init_auth_id`)
+  UNIQUE KEY `init_auth` (`init_auth_id`),
+  UNIQUE KEY `session_token` (`session_token`),
+  UNIQUE KEY `csrf_token` (`csrf_token`)
   
 ) ENGINE=InnoDB;
 
