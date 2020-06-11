@@ -26,6 +26,12 @@ $instructor->check_session($con, 0);
 //stores error messages corresponding to form fields
 $errorMsg = array();
 
+// set flags
+$course_code = NULL;
+$course_name = NULL;
+$semester = NULL;
+$course_year = NULL;
+
 if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
   
@@ -58,7 +64,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     $errorMsg["course-name"] = "Please enter a valid course name.";
   } 
 
-  $semester = NULL;
   if (!isset($_POST['semester']))
   {
     $errorMsg['semester'] = 'Please choose a semester.';
@@ -75,6 +80,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     {
        $errorMsg["semester"] = "Please select a valid semester."; 
     }
+    
+    $semester = SEMESTER_MAP[$semester];
   }
   
   $course_year = trim($_POST['course-year']);
@@ -90,11 +97,27 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
   // check if fields are all valid
   if (empty($errorMsg))
   {
-    $semester = SEMESTER_MAP[$semester];
-    $stmt = $con->prepare('INSERT INTO course (code, name, semester, year, instructor_id) VALUES (?, ?, ?, ?, ?)');
+    
+    // check for duplicate courses
+    $stmt = $con->prepare('SELECT id FROM course WHERE code=? AND name=? AND semester=? AND year=? AND instructor_id=?');
     $stmt->bind_param('ssiii', $course_code, $course_name, $semester, $course_year, $instructor->id);
     $stmt->execute();
-    echo "<script>alert('Your course was added sucessfully!');</script>";
+    $result = $stmt->get_result();
+    $data = $result->fetch_all(MYSQLI_ASSOC);
+
+    // only add if not a duplicate
+    if ($result->num_rows == 0)
+    {
+      $stmt = $con->prepare('INSERT INTO course (code, name, semester, year, instructor_id) VALUES (?, ?, ?, ?, ?)');
+      $stmt->bind_param('ssiii', $course_code, $course_name, $semester, $course_year, $instructor->id);
+      $stmt->execute();
+      echo "<script>alert('Your course was added sucessfully!');</script>";
+    }
+    else
+    {
+      $errorMsg['duplicate'] = 'Error: The entered course already exists.';
+    }   
+    
   }
 
 }
@@ -117,30 +140,30 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         <h2>Course Information</h2>
     </div>
 
-<!--------form action="addCourses.php" once linked-------------------->
+<span class="w3-card w3-red"><?php if(isset($errorMsg["duplicate"])) {echo $errorMsg["duplicate"];} ?></span>
 <form action="addCourses.php" method ="post" class="w3-container">
     <span class="w3-card w3-red"><?php if(isset($errorMsg["course-code"])) {echo $errorMsg["course-code"];} ?></span><br />
     <label for="course-code">Course Code:</label><br>
-    <input type="text" id="course-code" class="w3-input w3-border" style="width:30%" name="course-code" placeholder="e.g, CSE442"><br>
+    <input type="text" id="course-code" class="w3-input w3-border" style="width:30%" name="course-code" placeholder="e.g, CSE442" <?php if ($course_code) {echo 'value="' . htmlspecialchars($course_code) . '"';} ?>><br>
     
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["course-name"])) {echo $errorMsg["course-name"];} ?></span><br />
     <label for="course-name">Course Name:</label><br>
-    <input type="text" id="course-name" class="w3-input w3-border" style="width:30%" name="course-name" placeholder="e.g, Software Engineering Concepts"><br>
+    <input type="text" id="course-name" class="w3-input w3-border" style="width:30%" name="course-name" placeholder="e.g, Software Engineering Concepts" <?php if ($course_name) {echo 'value="' . htmlspecialchars($course_name) . '"';} ?>><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["semester"])) {echo $errorMsg["semester"];} ?></span><br />
     <label for="semester">Course Semester:</label><br>
     <select class="w3-select w3-border" style="width:30%" name="semester">
-        <option value="" disabled selected>Choose semester:</option>
-        <option value="fall">Fall</option>
-        <option value="winter">Winter</option>
-        <option value="spring">Spring</option>
-        <option value="summer">Summer</option>
+        <option value="" disabled <?php if (!$semester) {echo 'selected';} ?>>Choose semester:</option>
+        <option value="fall" <?php if ($semester == 4) {echo 'selected';} ?>>Fall</option>
+        <option value="winter" <?php if ($semester == 1) {echo 'selected';} ?>>Winter</option>
+        <option value="spring" <?php if ($semester == 2) {echo 'selected';} ?>>Spring</option>
+        <option value="summer" <?php if ($semester == 3) {echo 'selected';} ?>>Summer</option>
     </select><br><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["course-year"])) {echo $errorMsg["course-year"];} ?></span><br />
     <label for="year">Course Year:</label><br>
-    <input type="number" id="year" class="w3-input w3-border" style="width:30%" name="course-year" placeholder="e.g, 2020"><br>
+    <input type="number" id="year" class="w3-input w3-border" style="width:30%" name="course-year" placeholder="e.g, 2020" <?php if ($course_year) {echo 'value="' . htmlspecialchars($course_year) . '"';} ?>><br>
     <input type="submit" value="Add Course">
 
 </form>
