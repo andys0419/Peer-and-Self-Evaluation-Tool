@@ -5,8 +5,12 @@ CREATE TABLE `course` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `code` TEXT NOT NULL,
   `name` TEXT NOT NULL,
+  `semester` INT NOT NULL,
+  `year` INT NOT NULL,
+  `instructor_id` INT NOT NULL,
   
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  CONSTRAINT `instructor_id_constraint` FOREIGN KEY (`instructor_id`) REFERENCES `instructors` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
   
 ) ENGINE=InnoDB;
 
