@@ -44,13 +44,13 @@ $instructor->check_session($con, 0);
 <!--------form action="addCourses.php" once linked-------------------->
 <form action="addCourses.php" method ="post" class="w3-container">
     <label for="course-code">Course Code:</label><br>
-    <input type="text" minlength=6 maxlength=6 id="course-code" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-code" placeholder="e.g, CSE442" require><br>
+    <input type="text" minlength=5 maxlength=6 id="course-code" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-code" placeholder="e.g, CSE442" required><br>
 
     <label for="course-name">Course Name:</label><br>
-    <input type="text" id="course-name" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-name" placeholder="e.g, Software Engineering Concepts" require><br>
+    <input type="text" id="course-name" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-name" placeholder="e.g, Software Engineering Concepts" required><br>
 
     <label for="semester">Course Semester:</label><br>
-    <select class="w3-select w3-border" style="width:30%" name="semester" require>
+    <select class="w3-select w3-border" style="width:30%" name="semester" required>
         <option value="" disabled selected>Choose semester:</option>
         <option value="fall">Fall</option>
         <option value="winter">Winter</option>
@@ -59,7 +59,7 @@ $instructor->check_session($con, 0);
     </select><br><br>
 
     <label for="year">Course Year:</label><br>
-    <input type="number" maxlength="4" id="year" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-year" placeholder="e.g, 2020" require><br>
+    <input type="number" maxlength="4" id="year" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-year" placeholder="e.g, 2020" required><br>
 
     <input type="submit" name="add" value="Add">
 
@@ -146,15 +146,8 @@ $instructor->check_session($con, 0);
         }
 
         if (!$error) {
-            //Code for updating database goes here!
-            
-            
-            //popup "Duplicate"
-            
-            //popup "Success!"
+            "INSERT IGNORE INTO TestCourses (course_code,course_name,course_semester,course_year) VALUES ('$courseInfo[0]', '$courseInfo[1]', '$courseInfo[2]', '$courseInfo[3]')";
             echo "<script>alert('Your course was added sucessfully!');</script>";
-
-            
         }
         
 
