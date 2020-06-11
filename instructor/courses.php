@@ -69,11 +69,15 @@ while ($row = $result->fetch_assoc())
       <th>Semester</th>
       <th>Instructor</th>
       </tr>
-    <!------------------------PHP code to create table implemented here-------------------------->
+      <?php 
+        foreach ($courses as $course)
+        {
+          echo '<tr><td>' . htmlspecialchars($course['code']) . '</td><td>' . htmlspecialchars($course['name']) . '</td><td>' . htmlspecialchars($course['semester']) . ' ' . htmlspecialchars($course['year']) . '</td><td>' . htmlspecialchars($instructor->name) . '</td></tr>';
+        }
+      ?>
     </table>
-
+    <br />
 <div class = "center">
-    <!---Redirect to addCourses.html. Once backend linked, then addCourses.php------------------->
     <a href="addCourses.php"><button class="w3-button w3-dark-grey">+ Add Course</button></a>
 </div> 
 
