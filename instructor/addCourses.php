@@ -22,6 +22,9 @@ $con = connectToDatabase();
 $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
+//stores error messages corresponding to form fields
+$errorMsg = array();
+
 ?>
 
 <!DOCTYPE html>
@@ -75,9 +78,6 @@ $instructor->check_session($con, 0);
 <?php
 //allocates fields from this 'addCourse' form into an array
 $courseInfo = array('course-code','course-name','semester','course-year');
-
-//stores error messages corresponding to form fields
-$errorMsg = array();
 
 //flag for error messages
 $error = false;
