@@ -40,8 +40,6 @@ while ($row = $result->fetch_assoc())
   $course_info['semester'] = SEMESTER_MAP_REVERSE[$row['semester']];
   $course_info['year'] = $row['year'];
   array_push($courses, $course_info);
-  
-  
 }
 
 ?>
@@ -62,6 +60,17 @@ while ($row = $result->fetch_assoc())
         <h2>Instructor Courses</h2>
     </div>
 
+    <?php
+      
+      // echo the success message if any
+      if (isset($_SESSION['course-add']) and $_SESSION['course-add'])
+      {
+        echo '<div class="w3-container w3-center w3-green">' . $_SESSION['course-add'] . '</div><br />';
+        $_SESSION['course-add'] = NULL;
+      }
+      
+    ?>
+    
     <table border=1 style=width:100%>
       <tr>
       <th>Code</th>

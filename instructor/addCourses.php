@@ -111,7 +111,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
       $stmt = $con->prepare('INSERT INTO course (code, name, semester, year, instructor_id) VALUES (?, ?, ?, ?, ?)');
       $stmt->bind_param('ssiii', $course_code, $course_name, $semester, $course_year, $instructor->id);
       $stmt->execute();
-      echo "<script>alert('Your course was added sucessfully!');</script>";
+      
+      // redirect to course page with message
+      $_SESSION['course-add'] = "Successfully added course: " . htmlspecialchars($course_code) . ' - ' . htmlspecialchars($course_name) . ' - ' . SEMESTER_MAP_REVERSE[$semester] . ' ' . htmlspecialchars($course_year);
+      
+      http_response_code(302);   
+      header("Location: courses.php");
+      exit();
+      
     }
     else
     {
