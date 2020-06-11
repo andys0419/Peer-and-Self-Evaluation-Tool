@@ -23,6 +23,27 @@ $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
 
+// store information about courses as array of array
+$courses = array();
+
+// get information about the courses
+$stmt = $con->prepare('SELECT code, name, semester, year FROM course WHERE instructor_id=? ORDER BY year DESC, semester DESC');
+$stmt->bind_param('i', $instructor->id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+while ($row = $result->fetch_assoc())
+{
+  $course_info = array();
+  $course_info['code'] = $row['code'];
+  $course_info['name'] = $row['name'];
+  $course_info['semester'] = SEMESTER_MAP_REVERSE[$row['semester']];
+  $course_info['year'] = $row['year'];
+  array_push($courses, $course_info);
+  
+  
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -42,18 +63,18 @@ $instructor->check_session($con, 0);
     </div>
 
     <table border=1 style=width:100%>
-        <tr>
-        <th>Code</th>
-        <th>Name</th>
-        <th>Semester</th>
-        <th>Instructor</th>
-        </tr>
+      <tr>
+      <th>Code</th>
+      <th>Name</th>
+      <th>Semester</th>
+      <th>Instructor</th>
+      </tr>
     <!------------------------PHP code to create table implemented here-------------------------->
     </table>
 
 <div class = "center">
     <!---Redirect to addCourses.html. Once backend linked, then addCourses.php------------------->
-    <input type='submit' name = "addCourse" onclick="window.location.href = 'addCourses.php';" class="w3-button w3-dark-grey" value="+"/></input>
+    <a href="addCourses.php"><button class="w3-button w3-dark-grey">+ Add Course</button></a>
 </div> 
 
 
