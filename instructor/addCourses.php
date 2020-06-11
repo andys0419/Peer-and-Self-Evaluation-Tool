@@ -90,8 +90,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
   // check if fields are all valid
   if (empty($errorMsg))
   {
-    $stmt = $con->prepare("INSERT INTO TestCourses (course_code,course_name,course_semester,course_year) VALUES ($_POST[$course_code], $_POST[$course_name], $_POST[$semester], $_POST[$course_year])");
-    $stmt -> execute();
+    $semester = SEMESTER_MAP[$semester];
+    $stmt = $con->prepare('INSERT INTO course (code, name, semester, year, instructor_id) VALUES (?, ?, ?, ?, ?)');
+    $stmt->bind_param('ssiii', $course_code, $course_name, $semester, $course_year, $instructor->id);
+    $stmt->execute();
     echo "<script>alert('Your course was added sucessfully!');</script>";
   }
 
