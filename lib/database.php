@@ -6,8 +6,8 @@ function connectToDatabase()
   //login to sql
   //Change this to your connection info.
   $DATABASE_HOST = 'tethys.cse.buffalo.edu';
-  $DATABASE_USER = 'FIXME';
-  $DATABASE_PASS = 'FIXME';
+  $DATABASE_USER = 'uladzimi';
+  $DATABASE_PASS = '50240331';
   $DATABASE_NAME = 'cse442_542_2020_summer_teamb_db';
   
   // Try and connect using the info above.

@@ -85,7 +85,11 @@ $instructor->check_session($con, 0);
 
     //allocates fields from this 'addCourse' form into an array
     $courseInfo = array('course-code','course-name','semester','course-year');
-   
+    $course_code = $_POST['course-code'];
+    $course_name = $_POST['course-name'];
+    $course_semester = $_POST['semester'];
+    $course_year = $_POST['course-year'];
+
     $error = false;
     if(isset($_POST['add'])) {
 	
@@ -146,7 +150,9 @@ $instructor->check_session($con, 0);
         }
 
         if (!$error) {
-            "INSERT IGNORE INTO TestCourses (course_code,course_name,course_semester,course_year) VALUES ('$courseInfo[0]', '$courseInfo[1]', '$courseInfo[2]', '$courseInfo[3]')";
+            $stmt = $con -> prepare("INSERT INTO TestCourses (course_code,course_name,course_semester,course_year) VALUES ($course_code, $course_name, $semester, $course_code)");
+            $stmt -> execute();
+            exit();
             echo "<script>alert('Your course was added sucessfully!');</script>";
         }
         
