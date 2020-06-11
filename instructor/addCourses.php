@@ -22,6 +22,72 @@ $con = connectToDatabase();
 $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
+//allocates fields from this 'addCourse' form into an array
+$courseInfo = array('course-code','course-name','semester','course-year');
+
+//stores error messages corresponding to form fields
+$errorMsg = array();
+
+//flag for error messages
+$error = false;
+if(isset($_POST['add'])) {
+
+    foreach($courseInfo AS $info) {
+    
+        //check valid formatting
+        if ($info == 'course-code') {
+            
+            if (!preg_match("/^[a-zA-Z0-9]*$/",$_POST[$info])) {
+                //echo "<br>";
+                $errorMsg["course-code"] = "<span class=\"error\">Please enter a valid course code.</span>";
+                $error = true;
+            }
+
+
+        } elseif($info == 'course-name') {
+
+            if (preg_match("/^[a-zA-Z0-9\/&\-',\\s]*$/", $_POST[$info])) {
+                
+            } else {
+                //echo "<br>";
+                $errorMsg["course-name"] = "<span class=\"error\">Please enter a valid course name.</span>";
+                $error = true;
+
+            }
+        } elseif($info == 'semester') {
+            
+
+          //Prevent injections into 'semester' field
+          if ($_POST[$info] == "fall" || $_POST[$info] == "winter" || $_POST[$info] == "spring" || $_POST[$info] == "summer") {
+               
+          } else {
+             //echo "<br>";
+             $errorMsg["semester"] = "<span class=\"error\">Please enter a valid semester.</span>"; 
+             $error = true; 
+          }
+        
+        }
+
+        else {
+            
+            if ($info == 'course-year') {
+            
+                if(!preg_match("/^[0-9]*$/",$_POST[$info]) || strlen($_POST[$info]) != 4) {
+                    //echo "<br>";
+                    $errorMsg["course-year"] = "<span class=\"error\">Please enter a valid year.</span>";
+                    $error = true;
+                }
+
+            }   
+        }
+    
+    }
+
+    if (!$error) {
+        $stmt = $con -> prepare("INSERT INTO TestCourses (course_code,course_name,course_semester,course_year) VALUES ($course_code, $course_name, $semester, $course_code)");
+        $stmt -> execute();
+        exit();
+        echo "<script>alert('Your course was added sucessfully!');</script>";
 
 ?>
 <!DOCTYPE html>
@@ -42,13 +108,18 @@ $instructor->check_session($con, 0);
     </div>
 
 <!--------form action="addCourses.php" once linked-------------------->
-<form action="addCourses.php" method ="post" class="w3-container">
+<form action="index.php" method ="post" class="w3-container">
+    
+    <p><?php echo $errorMsg["course-code"]; ?></p>
     <label for="course-code">Course Code:</label><br>
-    <input type="text" minlength=5 maxlength=6 id="course-code" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-code" placeholder="e.g, CSE442" required><br>
+    <input type="text" id="course-code" minlength=5 maxlength=6 class="w3-input w3-border w3-animate-input" style="width:30%" name="course-code" placeholder="e.g, CSE442" required><br>
+    
 
+    <p><?php echo $errorMsg["course-name"]; ?></p>
     <label for="course-name">Course Name:</label><br>
     <input type="text" id="course-name" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-name" placeholder="e.g, Software Engineering Concepts" required><br>
 
+    <p><?php echo $errorMsg["semester"]; ?></p>
     <label for="semester">Course Semester:</label><br>
     <select class="w3-select w3-border" style="width:30%" name="semester" required>
         <option value="" disabled selected>Choose semester:</option>
@@ -58,107 +129,14 @@ $instructor->check_session($con, 0);
         <option value="summer">Summer</option>
     </select><br><br>
 
+    <p><?php echo $errorMsg["course-year"]; ?></p>
     <label for="year">Course Year:</label><br>
-    <input type="number" maxlength="4" id="year" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-year" placeholder="e.g, 2020" required><br>
+    <input type="number" min="2020" id="year" class="w3-input w3-border w3-animate-input" style="width:30%" name="course-year" placeholder="e.g, 2020" required><br>
 
     <input type="submit" name="add" value="Add">
 
 </form>
 </html>
-
-
-<?php
-    //reports all errors
-    //error_reporting(-1); 
-    //ini_set("display_errors", "1"); 
-    //ini_set("log_errors", 1);
-
-    //starts the session
-    //session_start();
-    //require "lib/constants.php";
-
-    //checks session id is set
-    //if(!isset($_SESSION['id'])) {
-      // header("Location: ".SITE_HOME."instructorLogin.php");
-       //exit();
-    //}
-
-    //allocates fields from this 'addCourse' form into an array
-    $courseInfo = array('course-code','course-name','semester','course-year');
-    $course_code = $_POST['course-code'];
-    $course_name = $_POST['course-name'];
-    $course_semester = $_POST['semester'];
-    $course_year = $_POST['course-year'];
-
-    $error = false;
-    if(isset($_POST['add'])) {
-	
-    	foreach($courseInfo AS $info) {
-		
-            //checks fields aren't empty	
-		    if(empty($_POST[$info]) || !isset($_POST[$info])) {
-                echo "<br>";
-                echo "&nbsp;&nbsp Please fill in all required fields.";
-               
-                $error = true;
-		        break; 
-            } else {
-
-            //check valid formatting
-		    if ($info == 'course-code') {
-                
-                if (strlen($_POST[$info]) != 6) {
-                    echo "<br>";
-                    echo "&nbsp;&nbsp Error: Please enter a valid course code.";
-                    $error = true;  
-                }
-                
-                
-                if (!preg_match("/^[a-zA-Z0-9]*$/",$_POST[$info])) {
-                    echo "<br>";
-                    echo "&nbsp;&nbsp Error: Please enter a valid course code."; 
-                    $error = true;
-                }
-
-
-            } elseif($info == 'course-name') {
-
-                //allowed regex is incorrect. Needs to be fixed in another sprint.
-                if (preg_match("/^[a-zA-Z0-9\/&\-',\\s]*$/", $_POST[$info])) {
-                    
-                } else {
-                    echo "<br>";
-                    echo "&nbsp;&nbsp Error: Please enter a valid course name."; 
-                    $error = true;
-
-                }
-            } 
-
-		    else {
-                
-                if ($info == 'course-year') {
-                
-                    if(!preg_match("/^[0-9]*$/",$_POST[$info]) || strlen($_POST[$info]) != 4) {
-                        echo "<br>";
-                        echo "&nbsp;&nbsp Error: Please enter a valid year.";
-                        $error = true;
-                    }
-
-                }   
-            }
-		}
-        }
-
-        if (!$error) {
-            $stmt = $con -> prepare("INSERT INTO TestCourses (course_code,course_name,course_semester,course_year) VALUES ($course_code, $course_name, $semester, $course_code)");
-            $stmt -> execute();
-            exit();
-            echo "<script>alert('Your course was added sucessfully!');</script>";
-        }
-        
-
-    }   
-?>
 
 
 
