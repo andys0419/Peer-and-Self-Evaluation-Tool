@@ -1,0 +1,30 @@
+body {
+    background-color: #100e0e;
+    color: #FFFFFF;
+}
+
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  width: 200px;
+  background-color: #q;
+  border: 1px solid #555;
+  text-align: center;
+}
+
+li a {
+  display: block;
+  color: #000;
+  padding: 8px 16px;
+}
+
+li {
+  text-align: center;
+  border-bottom: 1px solid #555;
+}
+
+li:last-child {
+  border-bottom: none;
+}
