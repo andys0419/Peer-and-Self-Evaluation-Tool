@@ -106,6 +106,7 @@ CREATE TABLE `reviewers` (
   KEY `reviewers_teammate_constraint` (`teammate_email`),
   KEY `reviewers_reviewer_constraint2` (`reviewer_id`),
   KEY `reviewers_teammate_constraint2` (`reviewee_id`),
+  UNIQUE KEY `pairings` (`survey_id`, `reviewer_id`, `reviewee_id`),
   CONSTRAINT `reviewers_survey_id_constraint` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `reviewers_reviewer_id_constraint` FOREIGN KEY (`reviewer_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `reviewers_reviewee_id_constraint` FOREIGN KEY (`reviewee_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
