@@ -27,6 +27,20 @@ $instructor->check_session($con, 0);
 //stores error messages corresponding to form fields
 $errorMsg = array();
 
+// store information about course codes in an array
+$courseCodes = array();
+
+// get information about the courses
+$stmt = $con->prepare('SELECT code FROM course WHERE instructor_id=? ORDER BY code ASC');
+$stmt->bind_param('i', $instructor->id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+while ($row = $result->fetch_assoc())
+{
+  array_push($courseCodes, $row['code']);
+}
+
 // set flags
 $course_id = NULL;
 $rubric_id = NULL;
@@ -127,9 +141,14 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     <span class="w3-card w3-red"><?php if(isset($errorMsg["course_id"])) {echo $errorMsg["course_id"];} ?></span><br />
     <label for="course_id">Course:</label><br>
     <select id="course_id" class="w3-select w3-border" style="width:61%" name="course_id">
-        <option value="0" disabled <?php if (!$course_id) {echo 'selected';} ?>>Select Course</option>
-        <option value="FIXME" <?php if ($course_id == 1) {echo 'selected';} ?>>placeholder</option>
-        <option value="FIXME" <?php if ($course_id == 2) {echo 'selected';} ?>>placeholder</option>
+        <option value="" disabled <?php if (!$course_id) {echo 'selected';} ?>>Select Course</option>
+        <?php
+        //$index = 0;
+        foreach ($courseCodes as $courseCode) {
+          $index++;
+          echo "<option value='$courseCode'>$courseCode</option>";
+        }
+        ?>
     </select><br><br>
     
     <span class="w3-card w3-red"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"];} ?></span><br />
@@ -169,3 +188,5 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 </form>
 </body>
 </html>
+
+
