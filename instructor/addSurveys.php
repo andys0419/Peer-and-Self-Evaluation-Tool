@@ -13,6 +13,7 @@ session_start();
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
+require_once "../lib/fileParse.php";
 
 
 //query information about the requester
@@ -73,8 +74,26 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
   }
   else if ($_FILES['pairing-file']['error'] != UPLOAD_ERR_OK)
   {
-    $errorMsg['pairing-file'] = 'An error occured when uploading the file. Pleas try again.';
+    $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
   }
+  // start parsing the file
+  else
+  {
+    // start parsing the file
+    $file_string = file_get_contents($_FILES['pairing-file']['tmp_name']);
+    
+    // catch errors or continue parsing the file
+    if ($file_string === false)
+    {
+      $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
+    }
+    else
+    {
+      $data = parse_pairings($pairing_mode, $file_string);
+      echo var_dump($data);
+    }
+  }
+  
   
   // check if main fields are valid
   if (!empty($errorMsg))
