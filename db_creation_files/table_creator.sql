@@ -15,6 +15,22 @@ CREATE TABLE `course` (
 ) ENGINE=InnoDB;
 
 
+-- roster table
+-- each row defines students who are in a certain course
+CREATE TABLE `roster` (
+
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `course_id` INT NOT NULL,
+  `student_id` INT NOT NULL,
+  
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `student` (`course_id`,`student_id`),
+  CONSTRAINT `course_id_constraint` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `student_id_constraint` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  
+) ENGINE=InnoDB;
+
+
 -- surveys TABLE
 -- each row represents a use of this system for a course. Students must only be able to submit evaluations between
 -- the start date and end date listed
