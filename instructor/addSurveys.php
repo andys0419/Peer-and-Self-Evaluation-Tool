@@ -27,7 +27,6 @@ $instructor->check_session($con, 0);
 $errorMsg = array();
 
 // set flags
-$course = NULL;
 $course_id = NULL;
 $rubric_id = NULL;
 $pairing_file = NULL;
@@ -36,6 +35,54 @@ $end_date = NULL;
 $start_time = NULL;
 $end_time = NULL;
 $pairing_mode = NULL;
+
+if($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+  
+  // make sure values exist
+  if (!isset($_POST['pairing-mode']) or !isset($_FILES['pairing-file']))
+  {
+    http_response_code(400);
+    echo "Bad Request: Missing parmeters.";
+    exit();
+  }
+  
+  // check the pairing mode
+  $pairing_mode = trim($_POST['pairing-mode']);
+  if (empty($pairing_mode))
+  {
+    $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
+  }
+  else if ($pairing_mode != '1' and $pairing_mode != '2')
+  {
+    $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
+  }
+  
+  // check for any uploaded file errors
+  if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_INI_SIZE)
+  {
+    $errorMsg['pairing-file'] = 'The selected file is too large.';
+  }
+  else if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_PARTIAL)
+  {
+    $errorMsg['pairing-file'] = 'The selected file was only paritally uploaded. Please try again.';
+  }
+  else if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_NO_FILE)
+  {
+    $errorMsg['pairing-file'] = 'A pairing file must be provided.';
+  }
+  else if ($_FILES['pairing-file']['error'] != UPLOAD_ERR_OK)
+  {
+    $errorMsg['pairing-file'] = 'An error occured when uploading the file. Pleas try again.';
+  }
+  
+  // check if main fields are valid
+  if (!empty($errorMsg))
+  {
+  }
+  
+}
+
 
 ?>
 <!DOCTYPE html>
@@ -58,56 +105,46 @@ $pairing_mode = NULL;
 
 <span class="w3-card w3-red"><?php if(isset($errorMsg["duplicate"])) {echo $errorMsg["duplicate"];} ?></span>
 <form action="addSurveys.php" method ="post" enctype="multipart/form-data" class="w3-container">
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["course"])) {echo $errorMsg["course"];} ?></span><br />
-    <label for="course">Course:</label><br>
-    <select class="w3-select w3-border" style="width:61%" name="course">
+    <span class="w3-card w3-red"><?php if(isset($errorMsg["course_id"])) {echo $errorMsg["course_id"];} ?></span><br />
+    <label for="course_id">Course:</label><br>
+    <select id="course_id" class="w3-select w3-border" style="width:61%" name="course_id">
         <option value="0" disabled <?php if (!$course_id) {echo 'selected';} ?>>Select Course</option>
         <option value="FIXME" <?php if ($course_id == 1) {echo 'selected';} ?>>placeholder</option>
         <option value="FIXME" <?php if ($course_id == 2) {echo 'selected';} ?>>placeholder</option>
     </select><br><br>
-
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"];} ?></span><br />
-    <label for="rubric-id">Survey Type:</label><br>
-    <select class="w3-select w3-border" style="width:61%" name="rubric-id">
-        <option value="" disabled <?php if (!$rubric_id) {echo 'selected';} ?>>Choose Survey:</option>
-        <option value="FIXME" <?php if ($rubric_id == 1) {echo 'selected';} ?>>placeholder</option>
-        <option value="FIXME" <?php if ($rubric_id == 2) {echo 'selected';} ?>>placeholder</option>
-    </select><br><br>
-
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["start-date"])) {echo $errorMsg["start-date"];} ?></span><br />
-    <label for="start-date">Start Date:</label><br>
-    <input type="date" id="start-date" class="w3-input w3-border" style="width:61%" name="start-date" placeholder="mm/dd/yyyy" <?php if ($start_date) {echo 'value="' . htmlspecialchars($start_date) . '"';} ?>><br>
     
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["start-time"])) {echo $errorMsg["start-time"];} ?></span><br />
-    <label for="start-time">Start time:</label><br>
-    <input type="time" id="start-time" class="w3-input w3-border" style="width:61%" name="start-time" placeholder="e.g., 09:05:PM" <?php if ($start_time) {echo 'value="' . htmlspecialchars($start_time) . '"';} ?>><br>
-
-
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["course-id"])) {echo $errorMsg["course-id"];} ?></span><br />
+    <span class="w3-card w3-red"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"];} ?></span><br />
     <label for="rubric-id">Question Bank:</label><br>
     <select class="w3-select w3-border" style="width:61%" name="rubric-id" id="rubric-id" disabled>
         <option value="0" selected>Default</option>
     </select><br><br>
 
+    <span class="w3-card w3-red"><?php if(isset($errorMsg["start-date"])) {echo $errorMsg["start-date"];} ?></span><br />
+    <label for="start-date">Start Date:</label><br>
+    <input type="date" id="start-date" class="w3-input w3-border" style="width:61%" name="start-date" <?php if ($start_date) {echo 'value="' . htmlspecialchars($start_date) . '"';} ?>><br>
+    
+    <span class="w3-card w3-red"><?php if(isset($errorMsg["start-time"])) {echo $errorMsg["start-time"];} ?></span><br />
+    <label for="start-time">Start time:</label><br>
+    <input type="time" id="start-time" class="w3-input w3-border" style="width:61%" name="start-time" <?php if ($start_time) {echo 'value="' . htmlspecialchars($start_time) . '"';} ?>><br>
+
+    <span class="w3-card w3-red"><?php if(isset($errorMsg["end-date"])) {echo $errorMsg["end-date"];} ?></span><br />
+    <label for="end-date">End Date:</label><br>
+    <input type="date" id="end-date" class="w3-input w3-border" style="width:61%" name="end-date" <?php if ($end_date) {echo 'value="' . htmlspecialchars($end_date) . '"';} ?>><br>
+    
+    <span class="w3-card w3-red"><?php if(isset($errorMsg["end-time"])) {echo $errorMsg["end-time"];} ?></span><br />
+    <label for="end-time">End time:</label><br>
+    <input type="time" id="end-time" class="w3-input w3-border" style="width:61%" name="end-time" <?php if ($end_time) {echo 'value="' . htmlspecialchars($end_time) . '"';} ?>><br>
+
     <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-mode"])) {echo $errorMsg["pairing-mode"];} ?></span><br />
     <label for="pairing-mode">Pairing File Mode:</label><br>
     <select id="pairing-mode" class="w3-select w3-border" style="width:61%" name="pairing-mode">
-        <option value="1" selected>Raw</option>
-        <option value="2">Team</option>
+        <option value="1" <?php if (!$pairing_mode) {echo 'selected';} ?>>Raw</option>
+        <option value="2" <?php if ($pairing_mode == 2) {echo 'selected';} ?>>Team</option>
     </select><br><br>
     
     <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"];} ?></span><br />
     <label for="pairing-file">Pairings (CSV File):</label><br>
     <input type="file" id="pairing-file" class="w3-input w3-border" style="width:61%" name="pairing-file" placeholder="e.g, data.csv" <?php if ($pairing_file) {echo 'value="' . htmlspecialchars($pairing_file) . '"';} ?>><br>
-    
-
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["end-date"])) {echo $errorMsg["end-date"];} ?></span><br />
-    <label for="end-date">End Date:</label><br>
-    <input type="date" id="end-date" class="w3-input w3-border" style="width:61%" name="end-date" placeholder="mm/dd/yyyy" <?php if ($end_date) {echo 'value="' . htmlspecialchars($end_date) . '"';} ?>><br>
-    
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["end-time"])) {echo $errorMsg["end-time"];} ?></span><br />
-    <label for="end-time">End time:</label><br>
-    <input type="time" id="end-time" class="w3-input w3-border" style="width:61%" name="end-time" placeholder="e.g., 11:59:PM" <?php if ($end_time) {echo 'value="' . htmlspecialchars($end_time) . '"';} ?>><br>
 
     <input type="submit" class="w3-button w3-blue" value="Create Survey">
 </form>
