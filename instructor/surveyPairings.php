@@ -142,7 +142,7 @@ for ($i = 0; $i < $size; $i++)
       ?>
     </table>
     <br />
-    <button>Download Pairings as CSV File</button>
+    <a href="pairingDownload.php?survey=<?php echo $sid; ?>" target="_blank"><button class="w3-button w3-blue">Download Pairings as CSV File</button></a>
     <hr />
     <div class="w3-container w3-center">
         <h2>Modify Survey Pairings</h2>
