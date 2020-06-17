@@ -92,22 +92,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
   }
   // start parsing the file
   $file_string = file_get_contents($_FILES['pairing-file']['tmp_name']);
-  $file_string = trim($file_string);
-  $array = explode(',', $file_string);
-  ////
   else
   {
-      // start parsing the file
+    // start parsing the file
     $file_string = file_get_contents($_FILES['pairing-file']['tmp_name']);
-    $file_string = trim($file_string);
-    $array = explode(',', $file_string);
-    ////
-    for ($i = 0; $i < sizeof(array); $i=$i+2) {
-      if (!preg_match('/[^A-Za-z]/', $array[i])){$errorMsg['pairing-file'] = 'Some names contain numbers or symbols';} // Names can contain '-'
-    }
-    for ($i = 1; $i < sizeof(array); $i=$i+2) {
-      //if (!preg_match('/[@]/', $array[i])){$errorMsg['pairing-file'] = 'Some names contain numbers or symbols';} //Check that email contains @
-    }
+
     // catch errors or continue parsing the file
     if ($file_string === false)
     {
