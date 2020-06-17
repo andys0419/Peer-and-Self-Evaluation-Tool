@@ -7,7 +7,7 @@ function parse_pairings($mode, $data_fields)
   // return array
   $split = array();
   
-  // handle team mode or roster mode
+  // handle team mode or raw mode
   if ($mode == "1")
   {
     
@@ -106,7 +106,7 @@ function check_pairings($mode, $pairings, $course_id, $db_connection)
   // prepare statement
   $stmt = $db_connection->prepare('SELECT roster.student_id FROM roster JOIN students ON roster.student_id=students.student_id WHERE students.email=? AND roster.course_id=?');
   
-  // handle team or roster mode
+  // handle team or raw mode
   if ($mode == "1")
   {
     // loop over each email address
@@ -168,4 +168,69 @@ function check_pairings($mode, $pairings, $course_id, $db_connection)
   }
   
 }
+
+function add_pairings($mode, $emails, $ids, $survey_id, $db_connection) 
+{
+  
+  // prepare SQL statements
+  $stmt_check = $db_connection->prepare('SELECT id FROM reviewers WHERE survey_id=? AND reviewer_id=? AND reviewee_id=?');
+  $stmt_add = $db_connection->prepare('INSERT INTO reviewers (survey_id, reviewer_email, teammate_email, reviewer_id, reviewee_id) VALUES (?, ?, ?, ?, ?)');
+  
+  // handle team or raw mode
+  if ($mode == "1")
+  {
+    // loop over each array
+    $size = count($emails);
+
+    // loop over each pairing
+    for ($i = 0; $i < $size; $i += 2)
+    {
+      // check if the pairing already exists
+      $stmt_check->bind_param('iii', $survey_id, $ids[$i], $ids[$i + 1]);
+      $stmt_check->execute();
+      $result = $stmt_check->get_result();
+      $data = $result->fetch_all(MYSQLI_ASSOC);
+      
+      // add the pairing if it does not exist
+      if ($result->num_rows == 0)
+      {
+        $stmt_add->bind_param('issii', $survey_id, $emails[$i], $emails[$i + 1], $ids[$i], $ids[$i + 1]);
+        $stmt_add->execute();
+      }
+    }
+  }
+  else if ($mode == "2")
+  {
+    // loop over each team
+    $upper_size = count($emails);
+    
+    for ($i = 0; $i < $upper_size; $i++)
+    {
+      // now loop over the members in a team
+      $lower_size = count($emails[$i]);
+     
+      for ($j = 0; $j < $lower_size; $j++)
+      {
+        // now loop over the team members again to generate pairings
+        for ($k = 0; $k < $lower_size; $k++)
+        {
+          // check if the pairing already exists
+          $stmt_check->bind_param('iii', $survey_id, $ids[$i][$j], $ids[$i][$k]);
+          $stmt_check->execute();
+          $result = $stmt_check->get_result();
+          $data = $result->fetch_all(MYSQLI_ASSOC);
+
+          // add the pairing if it does not exist
+          if ($result->num_rows == 0)
+          {
+            $stmt_add->bind_param('issii', $survey_id, $emails[$i][$j], $emails[$i][$k], $ids[$i][$j], $ids[$i][$k]);
+            $stmt_add->execute();
+          }
+        }
+      }
+    }
+  }
+  
+}
+
 ?>
