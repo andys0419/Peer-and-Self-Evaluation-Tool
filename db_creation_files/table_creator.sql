@@ -95,16 +95,23 @@ CREATE TABLE `reviewers` (
 
   `id` INT NOT NULL AUTO_INCREMENT,
   `survey_id` INT NOT NULL,
-  `reviewer_email` TEXT NOT NULL,
-  `teammate_email` TEXT NOT NULL,
+  `reviewer_email` VARCHAR(255) NOT NULL,
+  `teammate_email` VARCHAR(255) NOT NULL,
+  `reviewer_id` INT NOT NULL,
+  `reviewee_id` INT NOT NULL,
   
   PRIMARY KEY (`id`),
   KEY `reviewers_survey_id` (`survey_id`),
---  KEY `reviewers_reviewer_constraint` (`reviewer_email`),
---  KEY `reviewers_teammate_constraint` (`teammate_email`),
-  CONSTRAINT `reviewers_survey_id_constraint` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
---  CONSTRAINT `reviewers_reviewer_constraint` FOREIGN KEY (`reviewer_email`) REFERENCES `students` (`email`),
---  CONSTRAINT `reviewers_teammate_constraint` FOREIGN KEY (`teammate_email`) REFERENCES `students` (`email`)
+  KEY `reviewers_reviewer_constraint` (`reviewer_email`),
+  KEY `reviewers_teammate_constraint` (`teammate_email`),
+  KEY `reviewers_reviewer_constraint2` (`reviewer_id`),
+  KEY `reviewers_teammate_constraint2` (`reviewee_id`),
+  UNIQUE KEY `pairings` (`survey_id`, `reviewer_id`, `reviewee_id`),
+  CONSTRAINT `reviewers_survey_id_constraint` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `reviewers_reviewer_id_constraint` FOREIGN KEY (`reviewer_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `reviewers_reviewee_id_constraint` FOREIGN KEY (`reviewee_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `reviewers_reviewer_constraint` FOREIGN KEY (`reviewer_email`) REFERENCES `students` (`email`),
+  CONSTRAINT `reviewers_teammate_constraint` FOREIGN KEY (`teammate_email`) REFERENCES `students` (`email`)
   
 ) ENGINE=InnoDB;
 
