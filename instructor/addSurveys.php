@@ -82,6 +82,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     // start parsing the file
     $file_string = file_get_contents($_FILES['pairing-file']['tmp_name']);
     
+    // get rid of BOM if it exists
+    if (strlen($file_string) >= 3)
+    {
+      if ($file_string[0] == "\xef" and $file_string[1] == "\xbb" and $file_string[2] == "\xbf")
+      {
+        $file_string = substr($file_string, 3);
+      }
+    }
+    
     // catch errors or continue parsing the file
     if ($file_string === false)
     {
@@ -90,7 +99,21 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     else
     {
       $data = parse_pairings($pairing_mode, $file_string);
-      echo var_dump($data);
+      
+      // check for any errors
+      if (isset($data['error']))
+      {
+        $errorMsg['pairing-file'] = $data['error'];
+      }
+      else
+      {
+        
+        // now make sure the users are in the course roster
+        $student_ids = check_pairings($pairing_mode, $data, 9, $con);
+        
+        echo var_dump($student_ids);
+        
+      }
     }
   }
   

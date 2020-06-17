@@ -97,4 +97,75 @@ function parse_pairings($mode, $data_fields)
   
 }
 
+function check_pairings($mode, $pairings, $course_id, $db_connection)
+{
+  
+  // return array
+  $ids = array();
+  
+  // prepare statement
+  $stmt = $db_connection->prepare('SELECT roster.student_id FROM roster JOIN students ON roster.student_id=students.student_id WHERE students.email=? AND roster.course_id=?');
+  
+  // handle team or roster mode
+  if ($mode == "1")
+  {
+    // loop over each email address
+    foreach ($pairings as $email)
+    {
+
+      $stmt->bind_param('si', $email, $course_id);
+      $stmt->execute();
+      $result = $stmt->get_result();
+      $data = $result->fetch_all(MYSQLI_ASSOC);
+
+      // make sure the student is enrolled in the course
+      if ($result->num_rows == 0)
+      {
+        $ids['error'] = 'The student with the following email address is not in the course roster: ' . htmlspecialchars($email) . '<br />The course roster additon page is';
+        return $ids;
+      }
+
+      // store the id in the array
+      array_push($ids, $data[0]['student_id']);
+      
+    }
+    
+    return $ids;
+    
+  }
+  else if ($mode == "2")
+  {
+    // loop over each team
+    foreach ($pairings as $team)
+    {
+      // use a temp team member array
+      $member_array = array();
+      
+      foreach($team as $email)
+      {
+        $stmt->bind_param('si', $email, $course_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $data = $result->fetch_all(MYSQLI_ASSOC);
+
+        // make sure the student is enrolled in the course
+        if ($result->num_rows == 0)
+        {
+          $ids['error'] = 'The student with the following email address is not in the course roster: ' . htmlspecialchars($email) . '<br />The course roster additon page is';
+          return $ids;
+        }
+
+        // store the id in the array
+        array_push($member_array, $data[0]['student_id']);
+      }
+      
+      // add the temp array to the main array
+      array_push($ids, $member_array);
+    }
+    
+    return $ids;
+    
+  }
+  
+}
 ?>
