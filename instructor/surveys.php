@@ -14,6 +14,8 @@ require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 
+// set timezone
+date_default_timezone_set('America/New_York');
 
 // query information about the requester
 $con = connectToDatabase();
@@ -23,26 +25,34 @@ $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
 
-// store information about surveys as array of array
+// store information about surveys as array
 $surveys = array();
-$tempSurvey = array();
+
+// store information about courses as map of course ids
+$courses = array();
 
 //get information about all courses an instructor teaches
-$stmt1 = $con->prepare('SELECT code FROM course WHERE instructor_id=?');
+$stmt1 = $con->prepare('SELECT name, semester, year, code, id FROM course WHERE instructor_id=?');
 $stmt1->bind_param('i', $instructor->id);
 $stmt1->execute();
 $result1 = $stmt1->get_result();
 
-
 while ($row = $result1->fetch_assoc())
 {
-    array_push($tempSurvey, $row['code']);
+  $tempSurvey = array();
+  $tempSurvey['name'] = $row['name'];
+  $tempSurvey['semester'] = SEMESTER_MAP_REVERSE[$row['semester']];
+  $tempSurvey['year'] = $row['year'];
+  $tempSurvey['code'] = $row['code'];
+  $tempSurvey['id'] = $row['id'];
+  $courses[$row['id']] = $tempSurvey;
 }
 
 //Then, get information about courses an instructor has active surveys for
-foreach($tempSurvey as $course_code) {
-    $stmt2 = $con->prepare('SELECT course_id, start_date, expiration_date, rubric_id  FROM surveys WHERE course_id=? ORDER BY start_date ASC, expiration_date ASC');
-    $stmt2->bind_param('s', $course_code);
+foreach($courses as $course) {
+  
+    $stmt2 = $con->prepare('SELECT course_id, start_date, expiration_date, rubric_id, id FROM surveys WHERE course_id=? ORDER BY start_date ASC, expiration_date ASC');
+    $stmt2->bind_param('i', $course['id']);
     $stmt2->execute();
     $result2 = $stmt2->get_result();
     
@@ -53,6 +63,7 @@ foreach($tempSurvey as $course_code) {
         $survey_info['start_date'] = $row['start_date'];
         $survey_info['expiration_date'] = $row['expiration_date'];
         $survey_info['rubric_id'] = $row['rubric_id'];
+        $survey_info['id'] = $row['id'];
         array_push($surveys, $survey_info);
     } 
 }
@@ -75,27 +86,63 @@ foreach($tempSurvey as $course_code) {
     <div class="w3-container w3-center">
         <h2>Instructor Surveys</h2>
     </div>
+    
+    <?php
+      
+      // echo the success message if any
+      if (isset($_SESSION['survey-add']) and $_SESSION['survey-add'])
+      {
+        echo '<div class="w3-container w3-center w3-green">' . $_SESSION['survey-add'] . '</div><br />';
+        $_SESSION['survey-add'] = NULL;
+      }
+      // echo deletion message
+      else if (isset($_SESSION['survey-delete']) and $_SESSION['survey-delete'])
+      {
+        echo '<div class="w3-container w3-center w3-red">' . $_SESSION['survey-delete'] . '</div><br />';
+        $_SESSION['survey-delete'] = NULL;
+      }
+      
+    ?>
 
     <table class=w3-table border=1.0 style=width:100%>
         <tr>
         <th>Course</th>
-        <th>Questions</th>
-        <th>Completed Surveys</th>
-        <th>Start</th>
-        <th>End</th>
+        <th>Status</th>
+        <th>Start Date and Time</th>
+        <th>End Date and Time</th>
+        <th>Question Bank</th>
+        <th>Actions</th>
         </tr>
         <?php 
-        foreach ($surveys as $survey)
-        {
-          echo '<tr><td>' . htmlspecialchars($survey['course_id']) . '</td><td>' . htmlspecialchars($survey['start_date']) . '</td><td>' . htmlspecialchars($survey['expiration_date']) . ' ' . htmlspecialchars($survey['rubric_id']) . '</td></tr>';
-        }
+          $today = new DateTime();
+          foreach ($surveys as $survey)
+          {
+            
+            $s = new DateTime($survey['start_date']);
+            $e = new DateTime($survey['expiration_date']);
+            
+            echo '<tr><td>' . htmlspecialchars($courses[$survey['course_id']]['code'] . ' ' . $courses[$survey['course_id']]['name'] . ' - ' . $courses[$survey['course_id']]['semester'] . ' ' . $courses[$survey['course_id']]['year']) . '</td><td>';
+            
+            if ($today < $s)
+            {
+              echo 'Upcoming';
+            }
+            else if ($today < $e)
+            {
+              echo 'Active';
+            }
+            else
+            {
+              echo 'Expired';
+            }
+            echo '</td><td>' . htmlspecialchars($survey['start_date']) . '</td><td>' . htmlspecialchars($survey['expiration_date']) . '</td><td>Default</td><td><a href="surveyPairings.php?survey=' . $survey['id'] . '">View or Edit Pairings</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete Survey</a></td></tr>';
+          }
       ?>
     </table>
 <body>
 
 <div class = "center">
-    <!---Redirect to addSurveys.html. Once backend linked, then addSurveys.php------------------->
-    <input type='submit' name = "addSurveys" onclick="window.location.href = 'addSurveys.php';" class="w3-button w3-dark-grey" value="+ Add Survey"/></input>
+    <a href="addSurveys.php"><button class="w3-button w3-blue">+ Add Survey</button></a>
 </div> 
 
 </html> 
