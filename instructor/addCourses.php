@@ -31,6 +31,7 @@ $course_code = NULL;
 $course_name = NULL;
 $semester = NULL;
 $course_year = NULL;
+$roster_file = NULL;
 
 if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
@@ -172,6 +173,10 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     <label for="year">Course Year:</label><br>
     <input type="number" id="year" class="w3-input w3-border" style="width:30%" name="course-year" placeholder="e.g, 2020" <?php if ($course_year) {echo 'value="' . htmlspecialchars($course_year) . '"';} ?>><br>
     <input type="submit" value="Add Course">
+
+    <span class="w3-card w3-red"><?php if(isset($errorMsg["roster-file"])) {echo $errorMsg["roster-file"];} ?></span><br />
+    <label for="roster-file">Roster (CSV File):</label><br>
+    <input type="file" id="pairing-file" class="w3-input w3-border" style="width:30%" name="roster-file" placeholder="e.g, data.csv" <?php if ($roster_file) {echo 'value="' . htmlspecialchars($roster_file) . '"';} ?>><br>
 
 </form>
 </html>
