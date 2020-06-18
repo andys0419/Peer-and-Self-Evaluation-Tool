@@ -24,27 +24,32 @@ $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
 
-//stores error messages corresponding to form fields
-$errorMsg = array();
+// store information about courses as array of array
+$courses = array();
 
-// store information about course codes in an array
-$courseCodes = array();
-
-// // get information about the courses
-$stmt = $con->prepare('SELECT code FROM course WHERE instructor_id=? ORDER BY code ASC');
+// get information about the courses
+$stmt = $con->prepare('SELECT id, code, name, semester, year FROM course WHERE instructor_id=? ORDER BY year DESC, semester DESC');
 $stmt->bind_param('i', $instructor->id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 while ($row = $result->fetch_assoc())
 {
-  array_push($courseCodes, $row['code']);
+  $course_info = array();
+  $course_info['code'] = $row['code'];
+  $course_info['name'] = $row['name'];
+  $course_info['semester'] = SEMESTER_MAP_REVERSE[$row['semester']];
+  $course_info['year'] = $row['year'];
+  $course_info['id'] = $row['id'];
+  array_push($courses, $course_info);
 }
+
+//stores error messages corresponding to form fields
+$errorMsg = array();
 
 // set flags
 $course_id = NULL;
 $rubric_id = NULL;
-$pairing_file = NULL;
 $start_date = NULL;
 $end_date = NULL;
 $start_time = NULL;
@@ -217,10 +222,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     <label for="course-id">Course:</label><br>
     <select id="course-id" class="w3-select w3-border" style="width:61%" name="course-id"><?php if ($course_id) {echo 'value="' . htmlspecialchars($course_id) . '"';} ?>
         <?php
-        //$index = 0;
-        foreach ($courseCodes as $courseCode) {
-          //$index++;
-          echo "<option value='$courseCode'>$courseCode</option>";
+        foreach ($courses as $course) {
+          echo '<option value="' . $course['id'] . '">' . $course['code'] . ' ' . $course['name'] . ' - ' . $course['semester'] . ' ' . $course['year'] . '</option>';
         }
         ?>
     </select><br><br>
@@ -256,7 +259,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     
     <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"];} ?></span><br />
     <label for="pairing-file">Pairings (CSV File):</label><br>
-    <input type="file" id="pairing-file" class="w3-input w3-border" style="width:61%" name="pairing-file" placeholder="e.g, data.csv" <?php if ($pairing_file) {echo 'value="' . htmlspecialchars($pairing_file) . '"';} ?>><br>
+    <input type="file" id="pairing-file" class="w3-input w3-border" style="width:61%" name="pairing-file"><br>
 
     <input type="submit" class="w3-button w3-blue" value="Create Survey">
 </form>
