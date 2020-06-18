@@ -83,38 +83,32 @@ if ($result->num_rows == 0)
   exit();
 }
 
-// now perform the possible roster modification functions // start here
+// now perform the possible roster modification functions
 // first set some flags
 $errorMsg = array();
 
-// check if the survey's pairings can be modified
+// check if the course roster can be modified
+$stmt = $con->prepare('SELECT id FROM surveys WHERE course_id=? LIMIT 1');
+$stmt->bind_param('i', $cid);
+$stmt->execute();
+$result = $stmt->get_result();
+$data = $result->fetch_all(MYSQLI_ASSOC);
 
-/* 
-if ($current_date > $stored_start_date)
+// check if a survey already exists for the course
+if ($result->num_rows > 0)
 {
-  $errorMsg['modifiable'] = 'Survey already past start date.';
-} */
+  $errorMsg['modifiable'] = 'Course already has active surveys.';
+}
 
-/* // now perform the validation and parsing
+// now perform the validation and parsing
 if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
   // make sure values exist
-  if (!isset($_POST['pairing-mode']) or !isset($_FILES['pairing-file']))
+  if (!isset($_FILES['roster-file']))
   {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
     exit();
-  }
-  
-  // check the pairing mode
-  $pairing_mode = trim($_POST['pairing-mode']);
-  if (empty($pairing_mode))
-  {
-    $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
-  }
-  else if ($pairing_mode != '1' and $pairing_mode != '2')
-  {
-    $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
   }
   
   // now check for the agreement checkbox
@@ -128,27 +122,27 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
   }
   
   // validate the uploaded file
-  if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_INI_SIZE)
+  if ($_FILES['roster-file']['error'] == UPLOAD_ERR_INI_SIZE)
   {
-    $errorMsg['pairing-file'] = 'The selected file is too large.';
+    $errorMsg['roster-file'] = 'The selected file is too large.';
   }
-  else if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_PARTIAL)
+  else if ($_FILES['roster-file']['error'] == UPLOAD_ERR_PARTIAL)
   {
-    $errorMsg['pairing-file'] = 'The selected file was only paritally uploaded. Please try again.';
+    $errorMsg['roster-file'] = 'The selected file was only paritally uploaded. Please try again.';
   }
-  else if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_NO_FILE)
+  else if ($_FILES['roster-file']['error'] == UPLOAD_ERR_NO_FILE)
   {
-    $errorMsg['pairing-file'] = 'A pairing file must be provided.';
+    $errorMsg['roster-file'] = 'A pairing file must be provided.';
   }
-  else if ($_FILES['pairing-file']['error'] != UPLOAD_ERR_OK)
+  else if ($_FILES['roster-file']['error'] != UPLOAD_ERR_OK)
   {
-    $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
+    $errorMsg['roster-file'] = 'An error occured when uploading the file. Please try again.';
   }
   // start parsing the file
   else
   {
-    // start parsing the file
-    $file_string = file_get_contents($_FILES['pairing-file']['tmp_name']);
+
+    $file_string = file_get_contents($_FILES['roster-file']['tmp_name']);
     
     // get rid of BOM if it exists
     if (strlen($file_string) >= 3)
@@ -162,46 +156,78 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     // catch errors or continue parsing the file
     if ($file_string === false)
     {
-      $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
+      $errorMsg['roster-file'] = 'An error occured when uploading the file. Please try again.';
     }
     else
     {
-      $emails = parse_pairings($pairing_mode, $file_string);
+      $names_emails = parse_pairings("3", $file_string);
       
       // check for any errors
-      if (isset($emails['error']))
+      if (isset($names_emails['error']))
       {
-        $errorMsg['pairing-file'] = $emails['error'];
+        $errorMsg['roster-file'] = $names_emails['error'];
       }
       else
       {
         
-        // now make sure the users are in the course roster
-        $student_ids = check_pairings($pairing_mode, $emails, $survey_info[0]['course_id'], $con);
-        
-        // check for any errors
-        if (isset($student_ids['error']))
+        // now add the roster to the database if no other errors were set after deleting the roster info first
+        if (empty($errorMsg))
         {
-          $errorMsg['pairing-file'] = $student_ids['error'];
-        }
-        else
-        {
-          // finally delete the old pairings from the database and then add the new pairings to the database if no other error message were set so far
-          if (empty($errorMsg))
+          
+          // first delete the old entries
+          $stmt = $con->prepare('DELETE FROM roster WHERE course_id=?');
+          $stmt->bind_param('i', $cid);
+          $stmt->execute();
+                        
+          // now insert the roster into the roster database and the student database if needed
+          $roster_size = count($names_emails);
+          
+          // prepare sql statements
+          $stmt_check = $con->prepare('SELECT student_id FROM students WHERE email=?');
+          $stmt_news = $con->prepare('INSERT INTO students (email, name) VALUES (?, ?)');
+          $stmt_checkros = $con->prepare('SELECT id FROM roster WHERE student_id=? AND course_id=?');
+          $stmt_ros = $con->prepare('INSERT INTO roster (student_id, course_id) VALUES (?, ?)');
+          
+          for ($i = 0; $i < $roster_size; $i += 2)
           {
-            $stmt = $con->prepare('DELETE FROM reviewers WHERE survey_id=?');
-            $stmt->bind_param('i', $cid);
-            $stmt->execute();
             
-            add_pairings($pairing_mode, $emails, $student_ids, $cid, $con);
-          }
+            $stmt_check->bind_param('s', $names_emails[$i + 1]);
+            $stmt_check->execute();
+            $result = $stmt_check->get_result();
+            $student_info = $result->fetch_all(MYSQLI_ASSOC);
+            $student_id = NULL;
+            
+            // check if the student already exists if they don't insert them
+            if ($result->num_rows == 0)
+            {
+              $stmt_news->bind_param('ss', $names_emails[$i + 1], $names_emails[$i]);
+              $stmt_news->execute();
+              
+              $student_id = $con->insert_id;
+            }
+            else
+            {
+              $student_id = $student_info[0]['student_id'];
+            }
+            
+            // now, insert the student into the roster if they do not exist already
+            $stmt_checkros->bind_param('ii', $student_id, $cid);
+            $stmt_checkros->execute();
+            $result = $stmt_checkros->get_result();
+            $data = $result->fetch_all(MYSQLI_ASSOC);
+            
+            if ($result->num_rows == 0)
+            {
+              $stmt_ros->bind_param('ii', $student_id, $cid);
+              $stmt_ros->execute();
+            }
+            
+          }   
         }
-        
       }
-    }
-  }
-  
-} */
+    }   
+  } 
+}
 
 // finally, store information about course roster as array of array
 $students = array();
