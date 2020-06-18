@@ -6,23 +6,47 @@ ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
-//start the session variable
+// //start the session variable
 session_start();
 
-//bring in required code
+// //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/fileParse.php";
 
 
-//query information about the requester
+// set timezone
+date_default_timezone_set('America/New_York');
+
+
+// //query information about the requester
 $con = connectToDatabase();
 
-//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
+// //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
 $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
+
+// store information about courses as array of array
+$courses = array();
+
+// get information about the courses
+$stmt = $con->prepare('SELECT id, code, name, semester, year FROM course WHERE instructor_id=? ORDER BY year DESC, semester DESC');
+$stmt->bind_param('i', $instructor->id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+while ($row = $result->fetch_assoc())
+{
+  $course_info = array();
+  $course_info['code'] = $row['code'];
+  $course_info['name'] = $row['name'];
+  $course_info['semester'] = SEMESTER_MAP_REVERSE[$row['semester']];
+  $course_info['year'] = $row['year'];
+  $course_info['id'] = $row['id'];
+  array_push($courses, $course_info);
+}
 
 //stores error messages corresponding to form fields
 $errorMsg = array();
@@ -30,7 +54,6 @@ $errorMsg = array();
 // set flags
 $course_id = NULL;
 $rubric_id = NULL;
-$pairing_file = NULL;
 $start_date = NULL;
 $end_date = NULL;
 $start_time = NULL;
@@ -41,11 +64,138 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
   
   // make sure values exist
-  if (!isset($_POST['pairing-mode']) or !isset($_FILES['pairing-file']))
+  if (!isset($_POST['pairing-mode']) or !isset($_FILES['pairing-file']) or !isset($_POST['start-date']) or !isset($_POST['start-time']) or !isset($_POST['end-date']) or !isset($_POST['end-time']))
   {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
     exit();
+  }
+  
+  // check course is not empty
+  if (!isset($_POST['course-id']))
+  {
+    $errorMsg['course-id'] = "Please choose a course.";
+  }
+  else
+  {
+    $course_id = trim($_POST['course-id']);
+    if (empty($course_id))
+    {
+      $errorMsg['course-id'] = "Please choose a course.";
+    }
+    // make sure the instructor is teaching the course
+    else
+    {
+      $course_id = intval($course_id);
+      if ($course_id === 0)
+      {
+        $errorMsg['course-id'] = "Please choose a valid course.";
+      }
+      
+      $stmt = $con->prepare('SELECT year FROM course WHERE id=? AND instructor_id=?');
+      $stmt->bind_param('ii', $course_id, $instructor->id);
+      $stmt->execute();
+      $result = $stmt->get_result();
+      $data = $result->fetch_all(MYSQLI_ASSOC);
+
+      // reply forbidden if instructor did not create survey
+      if ($result->num_rows == 0)
+      {
+        $errorMsg['course-id'] = "Please choose a valid course.";
+      }
+    }
+  }
+
+  $start_date = trim($_POST['start-date']);
+  $end_date = trim($_POST['end-date']);
+  if (empty($start_date))
+  {
+    $errorMsg['start-date'] = "Please choose a start date.";
+  }
+  if (empty($end_date))
+  {
+    $errorMsg['end-date'] = "Please choose a end date.";
+  }
+  
+  // check the date's validity
+  if (!isset($errorMsg['start-date']) and !isset($errorMsg['end-date']))
+  {
+    $start = DateTime::createFromFormat('Y-m-d', $start_date);
+    if (!$start)
+    {
+      $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
+    }
+    else if ($start->format('Y-m-d') != $start_date)
+    {
+      $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
+    }
+    
+    $end = DateTime::createFromFormat('Y-m-d', $end_date);
+    if (!$end)
+    {
+      $errorMsg['end-date'] = "Please choose a valid end date (YYYY-MM-DD)";
+    }
+    else if ($end->format('Y-m-d') != $end_date)
+    {
+      $errorMsg['end-date'] = "Please choose a valid end date (YYYY-MM-DD)";
+    }
+  }
+
+
+  $start_time = trim($_POST['start-time']);
+  $end_time = trim($_POST['end-time']);
+
+  if (empty($start_time))
+  {
+    $errorMsg['start-time'] = "Please choose a start time.";
+  }
+  if (empty($end_time))
+  {
+    $errorMsg['end-time'] = "Please choose a end time.";
+  }
+  
+  if (!isset($errorMsg['start-time']) and !isset($errorMsg['end-time']))
+  {
+    $start = DateTime::createFromFormat('H:i', $start_time);
+    if (!$start)
+    {
+      $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
+    }
+    else if ($start->format('H:i') != $start_time)
+    {
+      $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
+    }
+    
+    $end = DateTime::createFromFormat('H:i', $end_time);
+    if (!$end)
+    {
+      $errorMsg['end-time'] = "Please choose a valid end time (HH:MM) (Ex: 15:00)";
+    }
+    else if ($end->format('H:i') != $end_time)
+    {
+      $errorMsg['end-time'] = "Please choose a valid end time (HH:MM) (Ex: 15:00)";
+    }
+  }
+  
+  // check dates and times
+  if (!isset($errorMsg['start-date']) and !isset($errorMsg['start-time']) and !isset($errorMsg['end-date']) and !isset($errorMsg['end-time']))
+  {
+    $s = new DateTime($start_date . ' ' . $start_time);
+    $e = new DateTime($end_date . ' ' . $end_time);
+    $today = new DateTime();
+    
+    if ($e < $s)
+    {
+      $errorMsg['end-date'] = "End date and time cannot be before start date and time.";
+      $errorMsg['end-time'] = "End date and time cannot be before start date and time.";
+      $errorMsg['start-date'] = "End date and time cannot be before start date and time.";
+      $errorMsg['start-time'] = "End date and time cannot be before start date and time.";
+    }
+    else if ($e < $today)
+    {
+      $errorMsg['end-date'] = "End date and time must occur in the future.";
+      $errorMsg['end-time'] = "End date and time must occur in the future.";
+    }
   }
   
   // check the pairing mode
@@ -109,7 +259,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
       {
         
         // now make sure the users are in the course roster
-        $student_ids = check_pairings($pairing_mode, $emails, 9, $con);
+        $student_ids = check_pairings($pairing_mode, $emails, $course_id, $con);
         
         // check for any errors
         if (isset($student_ids['error']))
@@ -119,9 +269,23 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         else
         {
           // finally add the pairings to the database if no other error message were set so far
+          // first add the survey details to the database
           if (empty($errorMsg))
           {
-            add_pairings($pairing_mode, $emails, $student_ids, 2, $con);
+            $sdate = $start_date . ' ' . $start_time;
+            $edate = $end_date . ' ' . $end_time;
+            $stmt = $con->prepare('INSERT INTO surveys (course_id, start_date, expiration_date, rubric_id) VALUES (?, ?, ?, 0)');
+            $stmt->bind_param('iss', $course_id, $sdate, $edate);
+            $stmt->execute();
+
+            add_pairings($pairing_mode, $emails, $student_ids, $con->insert_id, $con);
+
+            // redirect to survey page with sucess message
+            $_SESSION['survey-add'] = "Successfully added survey.";
+
+            http_response_code(302);   
+            header("Location: surveys.php");
+            exit();
           }
         }
         
@@ -129,16 +293,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     }
   }
   
-  
-  // check if main fields are valid
-  if (empty($errorMsg))
-  {
-  }
-  
 }
-
-
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -157,14 +314,23 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 </div>
 
 
-<span class="w3-card w3-red"><?php if(isset($errorMsg["duplicate"])) {echo $errorMsg["duplicate"];} ?></span>
 <form action="addSurveys.php" method ="post" enctype="multipart/form-data" class="w3-container">
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["course_id"])) {echo $errorMsg["course_id"];} ?></span><br />
-    <label for="course_id">Course:</label><br>
-    <select id="course_id" class="w3-select w3-border" style="width:61%" name="course_id">
-        <option value="0" disabled <?php if (!$course_id) {echo 'selected';} ?>>Select Course</option>
-        <option value="FIXME" <?php if ($course_id == 1) {echo 'selected';} ?>>placeholder</option>
-        <option value="FIXME" <?php if ($course_id == 2) {echo 'selected';} ?>>placeholder</option>
+    <span class="w3-card w3-red"><?php if(isset($errorMsg["course-id"])) {echo $errorMsg["course-id"];} ?></span><br />
+    <label for="course-id">Course:</label><br>
+    <select id="course-id" class="w3-select w3-border" style="width:61%" name="course-id"><?php if ($course_id) {echo 'value="' . htmlspecialchars($course_id) . '"';} ?>
+        <option value="-1" disabled <?php if (!$course_id) {echo 'selected';} ?>>Select Course</option>
+        <?php
+        foreach ($courses as $course) {
+          if ($course_id == $course['id'])
+          {
+            echo '<option value="' . $course['id'] . '" selected>' . $course['code'] . ' ' . $course['name'] . ' - ' . $course['semester'] . ' ' . $course['year'] . '</option>';
+          }
+          else
+          {
+            echo '<option value="' . $course['id'] . '" >' . $course['code'] . ' ' . $course['name'] . ' - ' . $course['semester'] . ' ' . $course['year'] . '</option>';
+          }
+        }
+        ?>
     </select><br><br>
     
     <span class="w3-card w3-red"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"];} ?></span><br />
@@ -198,7 +364,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     
     <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"];} ?></span><br />
     <label for="pairing-file">Pairings (CSV File):</label><br>
-    <input type="file" id="pairing-file" class="w3-input w3-border" style="width:61%" name="pairing-file" placeholder="e.g, data.csv" <?php if ($pairing_file) {echo 'value="' . htmlspecialchars($pairing_file) . '"';} ?>><br>
+    <input type="file" id="pairing-file" class="w3-input w3-border" style="width:61%" name="pairing-file"><br>
 
     <input type="submit" class="w3-button w3-blue" value="Create Survey">
 </form>

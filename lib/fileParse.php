@@ -171,7 +171,7 @@ function check_pairings($mode, $pairings, $course_id, $db_connection)
       // make sure the student is enrolled in the course
       if ($result->num_rows == 0)
       {
-        $ids['error'] = 'The student with the following email address is not in the course roster: ' . htmlspecialchars($email) . '<br />The course roster additon page is';
+        $ids['error'] = 'The student with the following email address is not in the course roster: ' . htmlspecialchars($email) . '<br />The course roster page is <a href="courseRoster.php?course=' . $course_id . '">here</a>.';
         return $ids;
       }
 
@@ -201,7 +201,7 @@ function check_pairings($mode, $pairings, $course_id, $db_connection)
         // make sure the student is enrolled in the course
         if ($result->num_rows == 0)
         {
-          $ids['error'] = 'The student with the following email address is not in the course roster: ' . htmlspecialchars($email) . '<br />The course roster additon page is';
+          $ids['error'] = 'The student with the following email address is not in the course roster: ' . htmlspecialchars($email) . '<br />The course roster page is <a href="courseRoster.php?course=' . $course_id . '">here</a>.';
           return $ids;
         }
 
