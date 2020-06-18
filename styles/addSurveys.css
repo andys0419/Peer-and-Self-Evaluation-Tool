@@ -1,0 +1,25 @@
+/*More changes to web page will be here!*/
+
+body {
+    background-color: #100e0e;
+    color: #FFFFFF; 
+}
+
+#columns {
+    margin-left:auto;
+    margin-right:auto;
+}
+
+#columns #left {
+    width:50%;
+    float:left ;
+}
+
+#columns #right {
+    width:50%;
+    float:right;
+}
+
+#submission {
+    text-align: center;
+    }

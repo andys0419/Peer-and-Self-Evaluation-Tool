@@ -1,0 +1,15 @@
+/*More changes to web page will be here!*/
+
+body {
+    background-color: #100e0e;
+    color: #FFFFFF; 
+}
+
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}

@@ -15,6 +15,22 @@ CREATE TABLE `course` (
 ) ENGINE=InnoDB;
 
 
+-- roster table
+-- each row defines students who are in a certain course
+CREATE TABLE `roster` (
+
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `course_id` INT NOT NULL,
+  `student_id` INT NOT NULL,
+  
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `student` (`course_id`,`student_id`),
+  CONSTRAINT `course_id_constraint` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `student_id_constraint` FOREIGN KEY (`student_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  
+) ENGINE=InnoDB;
+
+
 -- surveys TABLE
 -- each row represents a use of this system for a course. Students must only be able to submit evaluations between
 -- the start date and end date listed
@@ -95,16 +111,23 @@ CREATE TABLE `reviewers` (
 
   `id` INT NOT NULL AUTO_INCREMENT,
   `survey_id` INT NOT NULL,
-  `reviewer_email` TEXT NOT NULL,
-  `teammate_email` TEXT NOT NULL,
+  `reviewer_email` VARCHAR(255) NOT NULL,
+  `teammate_email` VARCHAR(255) NOT NULL,
+  `reviewer_id` INT NOT NULL,
+  `reviewee_id` INT NOT NULL,
   
   PRIMARY KEY (`id`),
   KEY `reviewers_survey_id` (`survey_id`),
---  KEY `reviewers_reviewer_constraint` (`reviewer_email`),
---  KEY `reviewers_teammate_constraint` (`teammate_email`),
-  CONSTRAINT `reviewers_survey_id_constraint` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
---  CONSTRAINT `reviewers_reviewer_constraint` FOREIGN KEY (`reviewer_email`) REFERENCES `students` (`email`),
---  CONSTRAINT `reviewers_teammate_constraint` FOREIGN KEY (`teammate_email`) REFERENCES `students` (`email`)
+  KEY `reviewers_reviewer_constraint` (`reviewer_email`),
+  KEY `reviewers_teammate_constraint` (`teammate_email`),
+  KEY `reviewers_reviewer_constraint2` (`reviewer_id`),
+  KEY `reviewers_teammate_constraint2` (`reviewee_id`),
+  UNIQUE KEY `pairings` (`survey_id`, `reviewer_id`, `reviewee_id`),
+  CONSTRAINT `reviewers_survey_id_constraint` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `reviewers_reviewer_id_constraint` FOREIGN KEY (`reviewer_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `reviewers_reviewee_id_constraint` FOREIGN KEY (`reviewee_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `reviewers_reviewer_constraint` FOREIGN KEY (`reviewer_email`) REFERENCES `students` (`email`),
+  CONSTRAINT `reviewers_teammate_constraint` FOREIGN KEY (`teammate_email`) REFERENCES `students` (`email`)
   
 ) ENGINE=InnoDB;
 
