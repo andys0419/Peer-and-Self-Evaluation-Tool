@@ -34,7 +34,7 @@ $stmt1->execute();
 $result1 = $stmt1->get_result();
 
 $index = 0;
-while ($row = $result->fetch_assoc())
+while ($row = $result1->fetch_assoc())
 {
     foreach ($row as $temp_code)
     {
@@ -44,14 +44,14 @@ while ($row = $result->fetch_assoc())
     }
 }
 
-//then, get information about courses an instructor has active surveys for
+//Then, get information about courses an instructor has active surveys for
 foreach($tempSurvey as $course_code) {
     $stmt2 = $con->prepare('SELECT course_id, start_date, expiration_date, rubric_id  FROM surveys WHERE course_id=? ORDER BY start_date ASC, expiration_date ASC');
     $stmt2->bind_param('i', $course_code);
     $stmt2->execute();
-    $result1 = $stmt2->get_result();
+    $result2 = $stmt2->get_result();
     
-    while ($row = $result1->fetch_assoc())
+    while ($row = $result2->fetch_assoc())
     {
         $survey_info = array();
         $survey_info['course_id'] = $row['course_id'];
