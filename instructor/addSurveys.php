@@ -277,8 +277,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
             $stmt = $con->prepare('INSERT INTO surveys (course_id, start_date, expiration_date, rubric_id) VALUES (?, ?, ?, 0)');
             $stmt->bind_param('iss', $course_id, $sdate, $edate);
             $stmt->execute();
-            
+
             add_pairings($pairing_mode, $emails, $student_ids, $con->insert_id, $con);
+
+            // redirect to survey page with sucess message
+            $_SESSION['course-add'] = "Successfully added survey: " . htmlspecialchars($course_id) . ' - ' . htmlspecialchars($rubric_id) . ' - ' . htmlspecialchars($sdate)  . ' ' . htmlspecialchars($edate);
+
+            http_response_code(302);   
+            header("Location: surveys.php");
+            exit();
           }
         }
         
