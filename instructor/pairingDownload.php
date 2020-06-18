@@ -90,7 +90,10 @@ while ($row = $result->fetch_assoc())
 }
 
 // remove the trailing comma
-$pairings[-2] = " ";
+if (strlen($pairings) > 1)
+{
+  $pairings[-2] = " ";
+}
 
 // generate the correct headers for the file download
 header('Content-Type: text/plain; charset=UTF-8');

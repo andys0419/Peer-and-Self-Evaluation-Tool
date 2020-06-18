@@ -107,7 +107,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
   }
   else if ($_FILES['roster-file']['error'] == UPLOAD_ERR_NO_FILE)
   {
-    $errorMsg['roster-file'] = 'A pairing file must be provided.';
+    $errorMsg['roster-file'] = 'A roster file must be provided.';
   }
   else if ($_FILES['roster-file']['error'] != UPLOAD_ERR_OK)
   {

@@ -72,7 +72,10 @@ while ($row = $result->fetch_assoc())
 }
 
 // remove the trailing comma
-$roster[-2] = " ";
+if (strlen($roster) > 1)
+{
+  $roster[-2] = " ";
+}
 
 // generate the correct headers for the file download
 header('Content-Type: text/plain; charset=UTF-8');
