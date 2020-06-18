@@ -216,7 +216,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     <span class="w3-card w3-red"><?php if(isset($errorMsg["course-id"])) {echo $errorMsg["course-id"];} ?></span><br />
     <label for="course-id">Course:</label><br>
     <select id="course-id" class="w3-select w3-border" style="width:61%" name="course-id"><?php if ($course_id) {echo 'value="' . htmlspecialchars($course_id) . '"';} ?>
-        <option value="" disabled <?php if (!$course_id) {echo 'selected';} ?>>Select Course</option>
         <?php
         //$index = 0;
         foreach ($courseCodes as $courseCode) {
