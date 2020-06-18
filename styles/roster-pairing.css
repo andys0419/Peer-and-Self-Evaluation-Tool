@@ -1,0 +1,21 @@
+body {
+    background-color: #D3D3D3;
+    color: #FFFFFF; 
+}
+h2 {
+    font-size: 30px;
+    text-decoration: underline;
+}
+
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+tr {
+    text-align: center;
+}
