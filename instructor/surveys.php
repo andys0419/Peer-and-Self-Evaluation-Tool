@@ -33,14 +33,12 @@ $stmt1->bind_param('i', $instructor->id);
 $stmt1->execute();
 $result1 = $stmt1->get_result();
 
-$index = 0;
+
 while ($row = $result1->fetch_assoc())
 {
     foreach ($row as $temp_code)
     {
-        $tempSurvey[index] = $temp_code;
-        $index++;
-
+        array_push($tempSurvey, $temp_code);
     }
 }
 
