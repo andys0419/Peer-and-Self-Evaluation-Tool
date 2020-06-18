@@ -16,6 +16,10 @@ require_once "../lib/infoClasses.php";
 require_once "../lib/fileParse.php";
 
 
+// set timezone
+date_default_timezone_set('America/New_York');
+
+
 // //query information about the requester
 $con = connectToDatabase();
 
@@ -60,11 +64,138 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
   
   // make sure values exist
-  if (!isset($_POST['pairing-mode']) or !isset($_FILES['pairing-file']))
+  if (!isset($_POST['pairing-mode']) or !isset($_FILES['pairing-file']) or !isset($_POST['start-date']) or !isset($_POST['start-time']) or !isset($_POST['end-date']) or !isset($_POST['end-time']))
   {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
     exit();
+  }
+  
+  // check course is not empty
+  if (!isset($_POST['course-id']))
+  {
+    $errorMsg['course-id'] = "Please choose a course.";
+  }
+  else
+  {
+    $course_id = trim($_POST['course-id']);
+    if (empty($course_id))
+    {
+      $errorMsg['course-id'] = "Please choose a course.";
+    }
+    // make sure the instructor is teaching the course
+    else
+    {
+      $course_id = intval($course_id);
+      if ($course_id === 0)
+      {
+        $errorMsg['course-id'] = "Please choose a valid course.";
+      }
+      
+      $stmt = $con->prepare('SELECT year FROM course WHERE id=? AND instructor_id=?');
+      $stmt->bind_param('ii', $course_id, $instructor->id);
+      $stmt->execute();
+      $result = $stmt->get_result();
+      $data = $result->fetch_all(MYSQLI_ASSOC);
+
+      // reply forbidden if instructor did not create survey
+      if ($result->num_rows == 0)
+      {
+        $errorMsg['course-id'] = "Please choose a valid course.";
+      }
+    }
+  }
+
+  $start_date = trim($_POST['start-date']);
+  $end_date = trim($_POST['end-date']);
+  if (empty($start_date))
+  {
+    $errorMsg['start-date'] = "Please choose a start date.";
+  }
+  if (empty($end_date))
+  {
+    $errorMsg['end-date'] = "Please choose a end date.";
+  }
+  
+  // check the date's validity
+  if (!isset($errorMsg['start-date']) and !isset($errorMsg['end-date']))
+  {
+    $start = DateTime::createFromFormat('Y-m-d', $start_date);
+    if (!$start)
+    {
+      $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
+    }
+    else if ($start->format('Y-m-d') != $start_date)
+    {
+      $errorMsg['start-date'] = "Please choose a valid start date (YYYY-MM-DD)";
+    }
+    
+    $end = DateTime::createFromFormat('Y-m-d', $end_date);
+    if (!$end)
+    {
+      $errorMsg['end-date'] = "Please choose a valid end date (YYYY-MM-DD)";
+    }
+    else if ($end->format('Y-m-d') != $end_date)
+    {
+      $errorMsg['end-date'] = "Please choose a valid end date (YYYY-MM-DD)";
+    }
+  }
+
+
+  $start_time = trim($_POST['start-time']);
+  $end_time = trim($_POST['end-time']);
+
+  if (empty($start_time))
+  {
+    $errorMsg['start-time'] = "Please choose a start time.";
+  }
+  if (empty($end_time))
+  {
+    $errorMsg['end-time'] = "Please choose a end time.";
+  }
+  
+  if (!isset($errorMsg['start-time']) and !isset($errorMsg['end-time']))
+  {
+    $start = DateTime::createFromFormat('H:i', $start_time);
+    if (!$start)
+    {
+      $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
+    }
+    else if ($start->format('H:i') != $start_time)
+    {
+      $errorMsg['start-time'] = "Please choose a valid start time (HH:MM) (Ex: 15:00)";
+    }
+    
+    $end = DateTime::createFromFormat('H:i', $end_time);
+    if (!$end)
+    {
+      $errorMsg['end-time'] = "Please choose a valid end time (HH:MM) (Ex: 15:00)";
+    }
+    else if ($end->format('H:i') != $end_time)
+    {
+      $errorMsg['end-time'] = "Please choose a valid end time (HH:MM) (Ex: 15:00)";
+    }
+  }
+  
+  // check dates and times
+  if (!isset($errorMsg['start-date']) and !isset($errorMsg['start-time']) and !isset($errorMsg['end-date']) and !isset($errorMsg['end-time']))
+  {
+    $s = new DateTime($start_date . ' ' . $start_time);
+    $e = new DateTime($end_date . ' ' . $end_time);
+    $today = new DateTime();
+    
+    if ($e < $s)
+    {
+      $errorMsg['end-date'] = "End date and time cannot be before start date and time.";
+      $errorMsg['end-time'] = "End date and time cannot be before start date and time.";
+      $errorMsg['start-date'] = "End date and time cannot be before start date and time.";
+      $errorMsg['start-time'] = "End date and time cannot be before start date and time.";
+    }
+    else if ($e < $today)
+    {
+      $errorMsg['end-date'] = "End date and time must occur in the future.";
+      $errorMsg['end-time'] = "End date and time must occur in the future.";
+    }
   }
   
   // check the pairing mode
@@ -113,88 +244,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     }
   }
   
-  
-  // check if main fields are valid
-  if (!empty($errorMsg))
-  {
-    
-    //check course is not empty
-    $course_id = trim($_POST['course-id']);
-    if (empty($course_id))
-    {
-      $errorMsg['course-id'] = "Please choose a course.";
-    }
-    
-    //must handle case for empty question bank ("rubric-id") here!
-
-    //check that dates are not empty
-    $start_date = trim($_POST['start-date']);
-    $end_date = trim($_POST['end-date']);
-    date_default_timezone_set('America/New_York');
-    $currentDate = date('Y/m/d');
-   
-    if(empty($start_date))
-    {
-      //check that dates are not empty. 
-      $errorMsg['start-date'] = "Please choose a start date.";
-    } elseif(strtotime($start_date) < strtotime($currentDate) && strtotime($currentDate) != '0000-00-00') 
-    { 
-      //If not empty, check they haven't already passed
-      $errorMsg['start-date'] = "Start date has already passed."; 
-    } 
-
-    if(empty($end_date))
-    {
-      //check that dates are not empty. 
-      $errorMsg['end-date'] = "Please choose a end date.";
-    } elseif(strtotime($end_date) < strtotime($currentDate) && strtotime($currentDate) != '0000-00-00')
-    {
-      //If not empty, check they haven't already passed
-      $errorMsg['end-date'] = "End date has already passed.";
-    }
-    
-    //Check  date formatting is correct.
-    if(strtotime($start_date) > strtotime($end_date) && !empty($start_date) && !empty($end_date))
-    { 
-      $errorMsg['start-date'] = "Start date cannot be after the end date."; 
-      $errorMsg['end-date'] = "End date cannot be before the start date.";
-    } 
-
-    
-
-    
-    $start_time = trim($_POST['start-time']);
-    $end_time = trim($_POST['end-time']);
-    $currentTime = date('G:i');
-    
-    if(empty($start_time))
-    {
-      //check that start time isn't empty. 
-      $errorMsg['start-time'] = "Please choose a start time.";
-    } 
-    elseif(strtotime($start_date) == strtotime($currentDate) && strtotime($start_time) <= strtotime($currentTime)) {
-      //if its the current day, make sure time hasn't already passed.
-      $errorMsg['start-time'] = "Start time has already passed.";
-    }
-    
-    if(empty($end_time))
-    {
-      //check that end time isn't empty. 
-      $errorMsg['end-time'] = "Please choose a end time.";
-    } 
-    elseif(strtotime($end_date) == strtotime($currentDate) && strtotime($end_time) <= strtotime($currentTime)) {
-       //if its the current day, make sure time hasn't already passed.
-       $errorMsg['end-time'] = "End time has already passed.";
-    }
-
-    if(strtotime($start_time) > strtotime($end_time) && !empty($start_time) && !empty($end_time) && strtotime($start_date) == strtotime($end_date) && !empty($start_date) && !empty($end_date))
-    { 
-      //if its the same day, make sure timing format is correct
-      $errorMsg['start-time'] = "Start time cannot be after the end time."; 
-      $errorMsg['end-time'] = "End time cannot be before the start time.";
-    } 
-  
-  }
 }
 ?>
 
@@ -216,15 +265,21 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 </div>
 
 
-<span class="w3-card w3-red"><?php if(isset($errorMsg["duplicate"])) {echo $errorMsg["duplicate"];} ?></span>
 <form action="addSurveys.php" method ="post" enctype="multipart/form-data" class="w3-container">
     <span class="w3-card w3-red"><?php if(isset($errorMsg["course-id"])) {echo $errorMsg["course-id"];} ?></span><br />
     <label for="course-id">Course:</label><br>
     <select id="course-id" class="w3-select w3-border" style="width:61%" name="course-id"><?php if ($course_id) {echo 'value="' . htmlspecialchars($course_id) . '"';} ?>
-        <option value="0" disabled <?php if (!$course_id) {echo 'selected';} ?>>Select Course</option>
+        <option value="-1" disabled <?php if (!$course_id) {echo 'selected';} ?>>Select Course</option>
         <?php
         foreach ($courses as $course) {
-          echo '<option value="' . $course['id'] . '">' . $course['code'] . ' ' . $course['name'] . ' - ' . $course['semester'] . ' ' . $course['year'] . '</option>';
+          if ($course_id == $course['id'])
+          {
+            echo '<option value="' . $course['id'] . '" selected>' . $course['code'] . ' ' . $course['name'] . ' - ' . $course['semester'] . ' ' . $course['year'] . '</option>';
+          }
+          else
+          {
+            echo '<option value="' . $course['id'] . '" >' . $course['code'] . ' ' . $course['name'] . ' - ' . $course['semester'] . ' ' . $course['year'] . '</option>';
+          }
         }
         ?>
     </select><br><br>
