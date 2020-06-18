@@ -6,20 +6,20 @@ ini_set("display_errors", "1"); // shows all errors
 ini_set("log_errors", 1);
 ini_set("error_log", "~/php-error.log");
 
-//start the session variable
+// //start the session variable
 session_start();
 
-//bring in required code
+// //bring in required code
 require_once "../lib/database.php";
 require_once "../lib/constants.php";
 require_once "../lib/infoClasses.php";
 require_once "../lib/fileParse.php";
 
 
-//query information about the requester
+// //query information about the requester
 $con = connectToDatabase();
 
-//try to get information about the instructor who made this request by checking the session token and redirecting if invalid
+// //try to get information about the instructor who made this request by checking the session token and redirecting if invalid
 $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
@@ -30,7 +30,7 @@ $errorMsg = array();
 // store information about course codes in an array
 $courseCodes = array();
 
-// get information about the courses
+// // get information about the courses
 $stmt = $con->prepare('SELECT code FROM course WHERE instructor_id=? ORDER BY code ASC');
 $stmt->bind_param('i', $instructor->id);
 $stmt->execute();
@@ -91,12 +91,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
   }
   // start parsing the file
-  $file_string = file_get_contents($_FILES['pairing-file']['tmp_name']);
   else
   {
     // start parsing the file
     $file_string = file_get_contents($_FILES['pairing-file']['tmp_name']);
-
+    
     // catch errors or continue parsing the file
     if ($file_string === false)
     {
@@ -113,12 +112,87 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
   // check if main fields are valid
   if (!empty($errorMsg))
   {
-  }
+    
+    //check course is not empty
+    $course_id = trim($_POST['course-id']);
+    if (empty($course_id))
+    {
+      $errorMsg['course-id'] = "Please choose a course.";
+    }
+    
+    //must handle case for empty question bank ("rubric-id") here!
+
+    //check that dates are not empty
+    $start_date = trim($_POST['start-date']);
+    $end_date = trim($_POST['end-date']);
+    date_default_timezone_set('America/New_York');
+    $currentDate = date('Y/m/d');
+   
+    if(empty($start_date))
+    {
+      //check that dates are not empty. 
+      $errorMsg['start-date'] = "Please choose a start date.";
+    } elseif(strtotime($start_date) < strtotime($currentDate) && strtotime($currentDate) != '0000-00-00') 
+    { 
+      //If not empty, check they haven't already passed
+      $errorMsg['start-date'] = "Start date has already passed."; 
+    } 
+
+    if(empty($end_date))
+    {
+      //check that dates are not empty. 
+      $errorMsg['end-date'] = "Please choose a end date.";
+    } elseif(strtotime($end_date) < strtotime($currentDate) && strtotime($currentDate) != '0000-00-00')
+    {
+      //If not empty, check they haven't already passed
+      $errorMsg['end-date'] = "End date has already passed.";
+    }
+    
+    //Check  date formatting is correct.
+    if(strtotime($start_date) > strtotime($end_date) && !empty($start_date) && !empty($end_date))
+    { 
+      $errorMsg['start-date'] = "Start date cannot be after the end date."; 
+      $errorMsg['end-date'] = "End date cannot be before the start date.";
+    } 
+
+    
+
+    
+    $start_time = trim($_POST['start-time']);
+    $end_time = trim($_POST['end-time']);
+    $currentTime = date('G:i');
+    
+    if(empty($start_time))
+    {
+      //check that start time isn't empty. 
+      $errorMsg['start-time'] = "Please choose a start time.";
+    } 
+    elseif(strtotime($start_date) == strtotime($currentDate) && strtotime($start_time) <= strtotime($currentTime)) {
+      //if its the current day, make sure time hasn't already passed.
+      $errorMsg['start-time'] = "Start time has already passed.";
+    }
+    
+    if(empty($end_time))
+    {
+      //check that end time isn't empty. 
+      $errorMsg['end-time'] = "Please choose a end time.";
+    } 
+    elseif(strtotime($end_date) == strtotime($currentDate) && strtotime($end_time) <= strtotime($currentTime)) {
+       //if its the current day, make sure time hasn't already passed.
+       $errorMsg['end-time'] = "End time has already passed.";
+    }
+
+    if(strtotime($start_time) > strtotime($end_time) && !empty($start_time) && !empty($end_time) && strtotime($start_date) == strtotime($end_date) && !empty($start_date) && !empty($end_date))
+    { 
+      //if its the same day, make sure timing format is correct
+      $errorMsg['start-time'] = "Start time cannot be after the end time."; 
+      $errorMsg['end-time'] = "End time cannot be before the start time.";
+    } 
   
+  }
 }
-
-
 ?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -139,9 +213,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 
 <span class="w3-card w3-red"><?php if(isset($errorMsg["duplicate"])) {echo $errorMsg["duplicate"];} ?></span>
 <form action="addSurveys.php" method ="post" enctype="multipart/form-data" class="w3-container">
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["course_id"])) {echo $errorMsg["course_id"];} ?></span><br />
-    <label for="course_id">Course:</label><br>
-    <select id="course_id" class="w3-select w3-border" style="width:61%" name="course_id">
+    <span class="w3-card w3-red"><?php if(isset($errorMsg["course-id"])) {echo $errorMsg["course-id"];} ?></span><br />
+    <label for="course-id">Course:</label><br>
+    <select id="course-id" class="w3-select w3-border" style="width:61%" name="course-id">
         <option value="" disabled <?php if (!$course_id) {echo 'selected';} ?>>Select Course</option>
         <?php
         //$index = 0;
@@ -189,5 +263,3 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 </form>
 </body>
 </html>
-
-
