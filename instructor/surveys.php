@@ -38,7 +38,7 @@ while ($row = $result1->fetch_assoc())
 {
     foreach ($row as $temp_code)
     {
-        array_push($tempSurvey, $temp_code);
+        array_push($tempSurvey, $temp_code['code']);
     }
 }
 
