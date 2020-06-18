@@ -94,6 +94,56 @@ function parse_pairings($mode, $data_fields)
     return $split;
     
   }
+  else if ($mode == "3")
+  {
+    
+    // check for blank file
+    if (empty(trim($data_fields)))
+    {
+      $split['error'] = 'Input CSV file cannot be blank.';
+      return $split;
+    }
+
+    // split on the comma
+    $split = explode(",", $data_fields);
+    
+    // reject if there are not an even number of fields
+    $size = count($split);
+    if ($size % 2 !== 0)
+    {
+      $split['error'] = 'Input CSV file must have an even number of fields.';
+      return $split;
+    }
+    
+    // remove whitespace from each entry and reject if any fields are blank
+    for ($i = 0; $i < $size; $i += 2)
+    {
+      $split[$i] = trim($split[$i]);
+      $split[$i + 1] = trim($split[$i + 1]);
+      
+      if (empty($split[$i]) or empty($split[$i + 1]))
+      {
+        $split['error'] = 'Input CSV file cannot have any blank fields.';
+        return $split;
+      }
+
+      if (!ctype_print($split[$i]))
+      {
+        $split['error'] = 'Names can only contain printable characters. Read the following name: ' . htmlspecialchars($split[$i]);
+        return $split;
+      }
+
+      if (!filter_var($split[$i + 1], FILTER_VALIDATE_EMAIL))
+      {
+        $split['error'] = 'An invalid email was encountered: ' .  htmlspecialchars($split[$i + 1]);
+        return $split;
+      }
+
+    }
+    
+    return $split;
+
+  }
   
 }
 
