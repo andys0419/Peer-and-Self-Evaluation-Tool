@@ -16,6 +16,10 @@ require_once "../lib/infoClasses.php";
 require_once "../lib/fileParse.php";
 
 
+// set timezone
+date_default_timezone_set('America/New_York');
+
+
 // query information about the requester
 $con = connectToDatabase();
 
@@ -24,23 +28,48 @@ $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
 
-// check for the query string parameter
-// respond not found on no query string parameter
-if (!isset($_GET['survey']))
+// check for the query string or post parameter
+$sid = NULL;
+if($_SERVER['REQUEST_METHOD'] == 'GET')
 {
-  http_response_code(404);   
-  echo "404: Not found.";
-  exit();
+  // respond not found on no query string parameter
+  if (!isset($_GET['survey']))
+  {
+    http_response_code(404);   
+    echo "404: Not found.";
+    exit();
+  }
+
+  // make sure the query string is an integer, reply 404 otherwise
+  $sid = intval($_GET['survey']);
+
+  if ($sid === 0)
+  {
+    http_response_code(404);   
+    echo "404: Not found.";
+    exit();
+  }
 }
-
-// make sure the query string is an integer, reply 404 otherwise
-$sid = intval($_GET['survey']);
-
-if ($sid === 0)
+else
 {
-  http_response_code(404);   
-  echo "404: Not found.";
-  exit();
+  // respond bad request if bad post parameters
+  if (!isset($_POST['survey']))
+  {
+    http_response_code(400);
+    echo "Bad Request: Missing parmeters.";
+    exit();
+  }
+
+  // make sure the post survey id is an integer, reply 400 otherwise
+  $sid = intval($_POST['survey']);
+
+  if ($sid === 0)
+  {
+    http_response_code(400);
+    echo "Bad Request: Invalid parameters.";
+    exit();
+  }
+  
 }
 
 // try to look up info about the requested survey
@@ -74,6 +103,128 @@ if ($result->num_rows == 0)
   http_response_code(403);   
   echo "403: Forbidden.";
   exit();
+}
+
+// now perform the possible pairing modification functions
+// first set some flags
+$errorMsg = array();
+$pairing_mode = NULL;
+
+// check if the survey's pairings can be modified
+$stored_start_date = new DateTime($survey_info[0]['start_date']);
+$current_date = new DateTime();
+
+if ($current_date > $stored_start_date)
+{
+  $errorMsg['modifiable'] = 'Survey already past start date.';
+}
+
+// now perform the validation and parsing
+if($_SERVER['REQUEST_METHOD'] == 'POST')
+{
+  // make sure values exist
+  if (!isset($_POST['pairing-mode']) or !isset($_FILES['pairing-file']))
+  {
+    http_response_code(400);
+    echo "Bad Request: Missing parmeters.";
+    exit();
+  }
+  
+  // check the pairing mode
+  $pairing_mode = trim($_POST['pairing-mode']);
+  if (empty($pairing_mode))
+  {
+    $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
+  }
+  else if ($pairing_mode != '1' and $pairing_mode != '2')
+  {
+    $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
+  }
+  
+  // now check for the agreement checkbox
+  if (!isset($_POST['agreement']))
+  {
+    $errorMsg['agreement'] = 'Please read the statement next to the checkbox and check it if you agree.';
+  }
+  else if ($_POST['agreement'] != "1")
+  {
+    $errorMsg['agreement'] = 'Please read the statement next to the checkbox and check it if you agree.';
+  }
+  
+  // validate the uploaded file
+  if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_INI_SIZE)
+  {
+    $errorMsg['pairing-file'] = 'The selected file is too large.';
+  }
+  else if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_PARTIAL)
+  {
+    $errorMsg['pairing-file'] = 'The selected file was only paritally uploaded. Please try again.';
+  }
+  else if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_NO_FILE)
+  {
+    $errorMsg['pairing-file'] = 'A pairing file must be provided.';
+  }
+  else if ($_FILES['pairing-file']['error'] != UPLOAD_ERR_OK)
+  {
+    $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
+  }
+  // start parsing the file
+  else
+  {
+    // start parsing the file
+    $file_string = file_get_contents($_FILES['pairing-file']['tmp_name']);
+    
+    // get rid of BOM if it exists
+    if (strlen($file_string) >= 3)
+    {
+      if ($file_string[0] == "\xef" and $file_string[1] == "\xbb" and $file_string[2] == "\xbf")
+      {
+        $file_string = substr($file_string, 3);
+      }
+    }
+    
+    // catch errors or continue parsing the file
+    if ($file_string === false)
+    {
+      $errorMsg['pairing-file'] = 'An error occured when uploading the file. Please try again.';
+    }
+    else
+    {
+      $emails = parse_pairings($pairing_mode, $file_string);
+      
+      // check for any errors
+      if (isset($emails['error']))
+      {
+        $errorMsg['pairing-file'] = $emails['error'];
+      }
+      else
+      {
+        
+        // now make sure the users are in the course roster
+        $student_ids = check_pairings($pairing_mode, $emails, $survey_info[0]['course_id'], $con);
+        
+        // check for any errors
+        if (isset($student_ids['error']))
+        {
+          $errorMsg['pairing-file'] = $student_ids['error'];
+        }
+        else
+        {
+          // finally delete the old pairings from the database and then add the new pairings to the database if no other error message were set so far
+          if (empty($errorMsg))
+          {
+            $stmt = $con->prepare('DELETE FROM reviewers WHERE survey_id=?');
+            $stmt->bind_param('i', $sid);
+            $stmt->execute();
+            
+            add_pairings($pairing_mode, $emails, $student_ids, $sid, $con);
+          }
+        }
+        
+      }
+    }
+  }
+  
 }
 
 // finally, store information about survey pairings as array of array
@@ -129,6 +280,21 @@ for ($i = 0; $i < $size; $i++)
         <h2>Survey Pairings</h2>
     </div>
     
+    <?php
+      // indicate any error messages
+      if ($_SERVER['REQUEST_METHOD'] == 'POST')
+      {
+        if (!empty($errorMsg))
+        {
+          echo '<div class="w3-container w3-center w3-red">Survey Pairing Modification Failed. <br /> See error messages at the bottom of the page for more details.</div><br />';
+        }
+        else
+        {
+          echo '<div class="w3-container w3-center w3-green">Survey Pairing Modification Successful</div><br />';
+        }
+      }
+    ?>
+    
     <table style="width:100%;border:1px solid black;border-collapse:collapse;">
       <tr>
       <th>Reviewer</th>
@@ -147,22 +313,32 @@ for ($i = 0; $i < $size; $i++)
     <div class="w3-container w3-center">
         <h2>Modify Survey Pairings</h2>
     </div>
-    <form action="surveyPairings.php" method ="post" enctype="multipart/form-data" class="w3-container">
-      <span class="w3-card w3-red"></span><br />
-      <label for="pairing-mode">Pairing File Mode:</label><br>
-      <select id="pairing-mode" class="w3-select w3-border" style="width:61%" name="pairing-mode">
-          <option value="1" >Raw</option>
-          <option value="2" >Team</option>
-      </select><br><br>
-      
-      <span class="w3-card w3-red"></span><br />
-      <label for="pairing-file">Pairings (CSV File):</label><br>
-      <input type="file" id="pairing-file" class="w3-input w3-border" style="width:61%" name="pairing-file" placeholder="e.g, data.csv"><br>
-      
-      <span class="w3-card w3-red"></span><br />
-      <input type="checkbox" id="agreement" name="agreement" value="1">
-      <label for="agreement">I understand that modifying survey pairings will overwrite all previously supplied pairings for this survey. In addition, any scores associated with these prior pairings will be lost.</label><br>
-    </form>
+    <?php if (!isset($errorMsg['modifiable'])): ?>
+      <form action="surveyPairings.php?survey=<?php echo $sid; ?>" method ="post" enctype="multipart/form-data" class="w3-container">
+        <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-mode"])) {echo $errorMsg["pairing-mode"];} ?></span><br />
+        <label for="pairing-mode">Pairing File Mode:</label><br>
+        <select id="pairing-mode" class="w3-select w3-border" style="width:61%" name="pairing-mode">
+            <option value="1" <?php if (!$pairing_mode) {echo 'selected';} ?>>Raw</option>
+            <option value="2" <?php if ($pairing_mode == 2) {echo 'selected';} ?>>Team</option>
+        </select><br><br>
+        
+        <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"];} ?></span><br />
+        <label for="pairing-file">Pairings (CSV File):</label><br>
+        <input type="file" id="pairing-file" class="w3-input w3-border" style="width:61%" name="pairing-file"><br>
+        
+        <span class="w3-card w3-red"><?php if(isset($errorMsg["agreement"])) {echo $errorMsg["agreement"];} ?></span><br />
+        <input type="checkbox" id="agreement" name="agreement" value="1">
+        <label for="agreement">I understand that modifying survey pairings will overwrite all previously supplied pairings for this survey. In addition, any scores associated with these prior pairings will be lost.</label><br /><br />
+        
+        <input type="hidden" name="survey" value="<?php echo $sid; ?>" />
+        
+        <input type="submit" class="w3-button w3-blue" value="Modify Survey Pairings" />
+      </form>
+    <?php else: ?>
+      <div class="w3-container w3-red">
+        <p>Survey pairings cannot be modified once the survey's start date has passed.</p>
+      </div>
+    <?php endif; ?>
     <br />
 
 </body>
