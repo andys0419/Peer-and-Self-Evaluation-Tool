@@ -43,9 +43,11 @@ $instructor->check_session($con, 0);
   <div class="w3-bar w3-blue">
     <a href="dashboard.php" class="w3-bar-item w3-button w3-mobile">Home</a>
     <a href="surveys.php" class="w3-bar-item w3-button w3-mobile">Surveys</a>
-    <a href="question-banks.php" class="w3-bar-item w3-button w3-mobile">Question Banks</a>
+    <!---Disabled href="question-banks.php"-->
+    <a class="w3-bar-item w3-button w3-mobile">Question Banks</a>
     <a href="courses.php" class="w3-bar-item w3-button w3-mobile">Courses</a>
-    <a href="logout.php" class="w3-bar-item w3-button w3-mobile w3-right">Logout</a>
+     <!---Disabled href="logout.php"-->
+    <a class="w3-bar-item w3-button w3-mobile w3-right">Logout</a>
     <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
   </div>
 </body>
