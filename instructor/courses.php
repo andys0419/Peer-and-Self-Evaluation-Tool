@@ -27,7 +27,7 @@ $instructor->check_session($con, 0);
 $courses = array();
 
 // get information about the courses
-$stmt = $con->prepare('SELECT code, name, semester, year FROM course WHERE instructor_id=? ORDER BY year DESC, semester DESC');
+$stmt = $con->prepare('SELECT code, name, semester, year, id FROM course WHERE instructor_id=? ORDER BY year DESC, semester DESC');
 $stmt->bind_param('i', $instructor->id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -39,6 +39,7 @@ while ($row = $result->fetch_assoc())
   $course_info['name'] = $row['name'];
   $course_info['semester'] = SEMESTER_MAP_REVERSE[$row['semester']];
   $course_info['year'] = $row['year'];
+  $course_info['id'] = $row['id'];
   array_push($courses, $course_info);
 }
 
@@ -77,11 +78,12 @@ while ($row = $result->fetch_assoc())
       <th>Name</th>
       <th>Semester</th>
       <th>Instructor</th>
+      <th>Actions</th>
       </tr>
       <?php 
         foreach ($courses as $course)
         {
-          echo '<tr><td>' . htmlspecialchars($course['code']) . '</td><td>' . htmlspecialchars($course['name']) . '</td><td>' . htmlspecialchars($course['semester']) . ' ' . htmlspecialchars($course['year']) . '</td><td>' . htmlspecialchars($instructor->name) . '</td></tr>';
+          echo '<tr><td>' . htmlspecialchars($course['code']) . '</td><td>' . htmlspecialchars($course['name']) . '</td><td>' . htmlspecialchars($course['semester']) . ' ' . htmlspecialchars($course['year']) . '</td><td>' . htmlspecialchars($instructor->name) . '</td><td><a href="courseRoster.php?course=' . $course['id'] . '">View or Edit Course Roster</a></td></tr>';
         }
       ?>
     </table>
