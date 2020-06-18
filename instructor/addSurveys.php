@@ -259,7 +259,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
       {
         
         // now make sure the users are in the course roster
-        $student_ids = check_pairings($pairing_mode, $emails, 9, $con);
+        $student_ids = check_pairings($pairing_mode, $emails, $course_id, $con);
         
         // check for any errors
         if (isset($student_ids['error']))
@@ -269,20 +269,21 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         else
         {
           // finally add the pairings to the database if no other error message were set so far
+          // first add the survey details to the database
           if (empty($errorMsg))
           {
-            add_pairings($pairing_mode, $emails, $student_ids, 2, $con);
+            $sdate = $start_date . ' ' . $start_time;
+            $edate = $end_date . ' ' . $end_time;
+            $stmt = $con->prepare('INSERT INTO surveys (course_id, start_date, expiration_date, rubric_id) VALUES (?, ?, ?, 0)');
+            $stmt->bind_param('iss', $course_id, $sdate, $edate);
+            $stmt->execute();
+            
+            add_pairings($pairing_mode, $emails, $student_ids, $con->insert_id, $con);
           }
         }
         
       }
     }
-  }
-  
-  
-  // check if main fields are valid
-  if (empty($errorMsg))
-  {
   }
   
 }
