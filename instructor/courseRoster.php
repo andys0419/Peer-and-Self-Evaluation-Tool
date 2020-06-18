@@ -255,7 +255,7 @@ while ($row = $result->fetch_assoc())
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../styles/courses.css">
+    <link rel="stylesheet" type="text/css" href="../styles/roster-pairing.css">
     <title>Course Roster</title>
 </head>
 <body>
