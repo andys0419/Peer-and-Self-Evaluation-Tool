@@ -209,7 +209,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     $errorMsg['pairing-mode'] = 'Please choose a valid mode for the pairing file.';
   }
   
-  // check for any uploaded file errors
+  // validate the uploaded file
   if ($_FILES['pairing-file']['error'] == UPLOAD_ERR_INI_SIZE)
   {
     $errorMsg['pairing-file'] = 'The selected file is too large.';
@@ -232,6 +232,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     // start parsing the file
     $file_string = file_get_contents($_FILES['pairing-file']['tmp_name']);
     
+    // get rid of BOM if it exists
+    if (strlen($file_string) >= 3)
+    {
+      if ($file_string[0] == "\xef" and $file_string[1] == "\xbb" and $file_string[2] == "\xbf")
+      {
+        $file_string = substr($file_string, 3);
+      }
+    }
+    
     // catch errors or continue parsing the file
     if ($file_string === false)
     {
@@ -239,9 +248,41 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     }
     else
     {
-      $data = parse_pairings($pairing_mode, $file_string);
-      echo var_dump($data);
+      $emails = parse_pairings($pairing_mode, $file_string);
+      
+      // check for any errors
+      if (isset($emails['error']))
+      {
+        $errorMsg['pairing-file'] = $emails['error'];
+      }
+      else
+      {
+        
+        // now make sure the users are in the course roster
+        $student_ids = check_pairings($pairing_mode, $emails, 9, $con);
+        
+        // check for any errors
+        if (isset($student_ids['error']))
+        {
+          $errorMsg['pairing-file'] = $student_ids['error'];
+        }
+        else
+        {
+          // finally add the pairings to the database if no other error message were set so far
+          if (empty($errorMsg))
+          {
+            add_pairings($pairing_mode, $emails, $student_ids, 2, $con);
+          }
+        }
+        
+      }
     }
+  }
+  
+  
+  // check if main fields are valid
+  if (empty($errorMsg))
+  {
   }
   
 }
