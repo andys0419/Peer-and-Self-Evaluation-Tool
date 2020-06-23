@@ -32,7 +32,7 @@ $instructor->check_session($con, 0);
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../styles/nav-header.css">
+    <link rel="stylesheet" type="text/css" href="../styles/header.css">
     <title>UB CSE Peer Evaluation :: Dashboard</title>
 </head>
 <body>
@@ -40,13 +40,19 @@ $instructor->check_session($con, 0);
         <img src="../images/logo_UB.png" width="150" height="100" alt="UB Logo">
         <p style="font-size:250%;display:inline-block" >UB CSE Peer Evaluation</p>
   </div>
-  <div class="w3-bar w3-blue">
-    <a href="dashboard.php" class="w3-bar-item w3-button w3-mobile">Home</a>
-    <a href="surveys.php" class="w3-bar-item w3-button w3-mobile">Surveys</a>
-    <a href="question-banks.php" class="w3-bar-item w3-button w3-mobile">Question Banks</a>
-    <a href="courses.php" class="w3-bar-item w3-button w3-mobile">Courses</a>
-    <a href="logout.php" class="w3-bar-item w3-button w3-mobile w3-right">Logout</a>
-    <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
-  </div>
+  
+  <div class="icon-bar">
+  <a class="active" href="dashboard.php"><i class="fa fa-home"><img src="../ico\
+ns/home.png" width="50" height="50" class="center">Home</i></a>
+  <a href="surveys.php"><i class="fa fa-survey"><img src ="../icons/survey.png"\
+ width="50" height="50" class="center"> Surveys</i></a>
+  <a href="question-banks.php"><i class="fa fa-question"><img src="../icons/che\
+ck.png" width="50" height="50"  class="center"> Question Banks </i></a>
+  <a href="courses.php"><i class="fa fa-courses"><img src ="../icons/online-lea\
+rning.png" width="50" height="50"  class="center">Courses</i></a>
+  <a href="logout.php"><i class="fa fa-logout"><img src="../icons/logout.png"  \
+width="50" height="50"  class="center"> Logout </i></a>
+<i class="fa fa-hello">Welcome, <?php echo htmlspecialchars($instructor->name); ?></i>
+</div>
 </body>
 </html>

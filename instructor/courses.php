@@ -54,9 +54,28 @@ while ($row = $result->fetch_assoc())
     <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../styles/courses.css">
+      <link rel="stylesheet" type="text/css" href="../styles/header.css">
     <title>Courses</title>
 </head>
 <body>
+
+<div class="icon-bar">                                                          
+  <a href="dashboard.php"><i class="fa fa-home"><img src="../ico\
+ns/home.png" width="50" height="50" class="center">Home</i></a>                 
+  <a href="surveys.php"><i class="fa fa-survey"><img src ="../icons/survey.png"\
+ width="50" height="50" class="center"> Surveys</i></a>                         
+  <a href="question-banks.php"><i class="fa fa-question"><img src="../icons/che\
+ck.png" width="50" height="50"  class="center"> Question Banks </i></a>         
+  <a class="active" href="courses.php"><i class="fa fa-courses"><img src ="../icons/online-lea\
+rning.png" width="50" height="50"  class="center">Courses</i></a>               
+  <a href="logout.php"><i class="fa fa-logout"><img src="../icons/logout.png"  \
+width="50" height="50"  class="center"> Logout </i></a>                         
+</div>
+
+
+
+
+
     <div class="w3-container w3-center">
         <h2>Instructor Courses</h2>
     </div>
