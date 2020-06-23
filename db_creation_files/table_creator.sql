@@ -63,24 +63,6 @@ CREATE TABLE `students` (
   
 ) ENGINE=InnoDB;
 
--- eval table
--- each row defines a single peer- or self-evaluation. Rows are added/updated only as students complete their evaluations
-CREATE TABLE `eval` (
-
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `survey_id` INT NOT NULL,
-  `submitter_id` INT NOT NULL,
-  `teammate_id` INT NOT NULL,
-  
-  PRIMARY KEY (`id`),
-  KEY `eval_survey_id` (`survey_id`),
-  KEY `eval_submitter_id` (`submitter_id`),
-  KEY `eval_teammate_id` (`teammate_id`),
-  CONSTRAINT `eval_submitter_id_constraint` FOREIGN KEY (`submitter_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `eval_teammate_id_constraint` FOREIGN KEY (`teammate_id`) REFERENCES `students` (`student_id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-  CONSTRAINT `eval_survey_id_constraint` FOREIGN KEY (`survey_id`) REFERENCES `surveys` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
- 
-) ENGINE=InnoDB;
 
 -- instructor table
 -- each row defines a single instructor who could use this system
@@ -103,6 +85,7 @@ CREATE TABLE `instructors` (
   UNIQUE KEY `csrf_token` (`csrf_token`)
   
 ) ENGINE=InnoDB;
+
 
 -- reviewers TABLE
 -- each row represents a single peer- or self-evalution that must be completed
@@ -134,21 +117,21 @@ CREATE TABLE `reviewers` (
 
 -- scores TABLE
 -- each row represents the scores submitted. These scores are for the evaluation the row connects to
--- in the eval table using the eval_id field
+-- in the reviewers table using the reviewers_id field
 CREATE TABLE `scores` (
 
-  `eval_id` INT NOT NULL,
+  `reviewers_id` INT NOT NULL,
   `score1` INT NOT NULL,
   `score2` INT NOT NULL,
   `score3` INT NOT NULL,
   `score4` INT NOT NULL,
   `score5` INT NOT NULL,
   
-  PRIMARY KEY (`eval_id`),
-  UNIQUE KEY `eval_id` (`eval_id`),
-  CONSTRAINT `scores_eval_id_constraint` FOREIGN KEY (`eval_id`) REFERENCES `eval` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  PRIMARY KEY (`reviewers_id`),
+  CONSTRAINT `scores_reviewers_id_constraint` FOREIGN KEY (`reviewers_id`) REFERENCES `reviewers` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
   
 ) ENGINE=InnoDB;
+
 
 -- student_login TABLE
 -- each row represents a student being able to login to the system. this is used to support the 2-step login approach
@@ -165,6 +148,7 @@ CREATE TABLE `student_login` (
   CONSTRAINT `student_login_email_constraint` FOREIGN KEY (`email`) REFERENCES `students` (`email`)
   
 ) ENGINE=InnoDB;
+
 
 -- FUTURE EXPANSION OPTION
 -- these tables were created so that we can allow faculty to tailor the questions & answers with each survey
