@@ -23,9 +23,23 @@ $instructor = new InstructorInfo();
 $instructor->check_session($con, 0);
 
 
-// respond not found on no query string parameter
+// respond not found on no query string parameters
 $sid = NULL;
 if (!isset($_GET['survey']))
+{
+  http_response_code(404);   
+  echo "404: Not found.";
+  exit();
+}
+if (!isset($_GET['type']))
+{
+  http_response_code(404);   
+  echo "404: Not found.";
+  exit();
+}
+
+// make sure the type query is one of the valid types. if not, respond not found
+if ($_GET['type'] !== 'raw' and $_GET['type'] !== 'normalized')
 {
   http_response_code(404);   
   echo "404: Not found.";
@@ -95,26 +109,15 @@ while ($row = $result->fetch_assoc())
   array_push($pairings, $pair_info);
 }
 
-// now get the names for each pairing and scores for each pairing
-$stmt = $con->prepare('SELECT name FROM students WHERE email=?');
+// now get the scores for each pairing
 $stmt_scores = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE reviewers_id=?');
+
+// generate raw output string on the fly
+$raw_output = "";
 
 $size = count($pairings);
 for ($i = 0; $i < $size; $i++)
 {
-  // first, get names
-  $stmt->bind_param('s', $pairings[$i]['reviewer_email']);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $data = $result->fetch_all(MYSQLI_ASSOC);
-  $pairings[$i]['reviewer_name'] = $data[0]['name'];
-  
-  $stmt->bind_param('s', $pairings[$i]['teammate_email']);
-  $stmt->execute();
-  $result = $stmt->get_result();
-  $data = $result->fetch_all(MYSQLI_ASSOC);
-  $pairings[$i]['teammate_name'] = $data[0]['name'];
-  
   // now, get score information
   $stmt_scores->bind_param('i', $pairings[$i]['id']);
   $stmt_scores->execute();
@@ -136,55 +139,30 @@ for ($i = 0; $i < $size; $i++)
     $pairings[$i]['score3'] = $data_scores[0]['score3'];
     $pairings[$i]['score4'] = $data_scores[0]['score4'];
     $pairings[$i]['score5'] = $data_scores[0]['score5'];
-  }  
+  } 
+  
+  if ($_GET['type'] === 'raw')
+  {
+    $raw_output .= $pairings[$i]['reviewer_email'] . ', ' . $pairings[$i]['teammate_email'] . ', ' . $pairings[$i]['score1'] . ', ' . $pairings[$i]['score2'] . ', ' . $pairings[$i]['score3'] . ', ' . $pairings[$i]['score4'] . ', ' . $pairings[$i]['score5'] . ",\n";
+  }
 }
+
+// now generate the raw scores output
+if ($_GET['type'] === 'raw')
+{
+  // remove the trailing comma
+  if (strlen($raw_output) > 1)
+  {
+    $raw_output[-2] = " ";
+  }
+  
+  // start the download
+  // generate the correct headers for the file download
+  header('Content-Type: text/plain; charset=UTF-8');
+  header('Content-Disposition: attachment; filename="survey-' . $sid . '-raw-results.txt"');
+
+  // ouput the data
+  echo $raw_output;
+}
+
 ?>
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../styles/surveys.css">
-    <title>Survey Results</title>
-</head>
-<body>
-    <div class="w3-container w3-center">
-        <h2>Download Survey Results</h2>
-        <a href="resultsDownload.php?survey=<?php echo $sid; ?>&type=raw" target="_blank"><button class="w3-button w3-blue">Download Raw Survey Results</button></a>
-        <a href="resultsDownload.php?survey=<?php echo $sid; ?>&type=normalized" target="_blank"><button class="w3-button w3-blue">Download Normalized Survey Results</button></a>
-    </div>
-    <hr />
-    <div class="w3-container w3-center">
-        <h2>View Survey Results</h2>
-    </div>
-    <table class="w3-table" border=1.0 style="width:100%">
-        <tr>
-        <th>Reviewer Email (Name)</th>
-        <th>Reviewee Email (Name)</th>
-        <th>Score 1</th>
-        <th>Score 2</th>
-        <th>Score 3</th>
-        <th>Score 4</th>
-        <th>Score 5</th>
-        </tr>
-        <?php 
-          foreach ($pairings as $pair)
-          { 
-            echo '<tr><td>' . htmlspecialchars($pair['reviewer_email'] . ' (' . $pair['reviewer_name'] . ')') . '</td><td>' . htmlspecialchars($pair['teammate_email'] . ' (' . $pair['teammate_name'] . ')') . '</td>';
-            
-            if ($pair['score1'] === NO_SCORE_MARKER)
-            {
-              echo '<td>Data Missing</td><td>Data Missing</td><td>Data Missing</td><td>Data Missing</td><td>Data Missing</td></tr>';
-            }
-            else
-            {
-              echo '<td>' . $pair['score1'] . '</td><td>' . $pair['score2'] . '</td><td>' . $pair['score3'] . '</td><td>' . $pair['score4'] . '</td><td>' . $pair['score5'] . '</td></tr>';
-            }
-          }
-          ?>
-    </table>
-</body>
-</html>
