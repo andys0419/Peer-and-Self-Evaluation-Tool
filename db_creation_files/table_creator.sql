@@ -192,14 +192,14 @@ CREATE TABLE `rubric_responses` (
 CREATE TABLE `scores2` (
 
   `id` INT NOT NULL AUTO_INCREMENT,
-  `eval_id` INT NOT NULL,
+  `reviewers_id` INT NOT NULL,
   `score` INT NOT NULL,
   `question_number` INT NOT NULL,
   
   PRIMARY KEY (`id`),
-  KEY `fk_eval` (`eval_id`),
+  KEY `fk_eval` (`reviewers_id`),
   KEY `quest_num` (`question_number`),
-  CONSTRAINT `scores2_ibfk_1` FOREIGN KEY (`eval_id`) REFERENCES `eval` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `scores2_ibfk_1` FOREIGN KEY (`reviewers_id`) REFERENCES `reviewers` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
   CONSTRAINT `scores2_ibfk2_1` FOREIGN KEY (`question_number`) REFERENCES `rubric_questions` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
   
 ) ENGINE=InnoDB;
