@@ -64,10 +64,18 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
   
   // make sure values exist
-  if (!isset($_POST['pairing-mode']) or !isset($_FILES['pairing-file']) or !isset($_POST['start-date']) or !isset($_POST['start-time']) or !isset($_POST['end-date']) or !isset($_POST['end-time']))
+  if (!isset($_POST['pairing-mode']) or !isset($_FILES['pairing-file']) or !isset($_POST['start-date']) or !isset($_POST['start-time']) or !isset($_POST['end-date']) or !isset($_POST['end-time']) or !isset($_POST['csrf-token']))
   {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
+    exit();
+  }
+  
+  // check CSRF token
+  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']))
+  {
+    http_response_code(403);
+    echo "Forbidden: Incorrect parameters.";
     exit();
   }
   
@@ -366,6 +374,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     <label for="pairing-file">Pairings (CSV File):</label><br>
     <input type="file" id="pairing-file" class="w3-input w3-border" style="width:61%" name="pairing-file"><br>
 
+    <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
+    
     <input type="submit" class="w3-button w3-blue" value="Create Survey">
 </form>
 </body>

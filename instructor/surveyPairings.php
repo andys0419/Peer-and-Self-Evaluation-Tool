@@ -123,10 +123,18 @@ if ($current_date > $stored_start_date)
 if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
   // make sure values exist
-  if (!isset($_POST['pairing-mode']) or !isset($_FILES['pairing-file']))
+  if (!isset($_POST['pairing-mode']) or !isset($_FILES['pairing-file']) or !isset($_POST['csrf-token']))
   {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
+    exit();
+  }
+  
+  // check CSRF token
+  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']))
+  {
+    http_response_code(403);
+    echo "Forbidden: Incorrect parameters.";
     exit();
   }
   
@@ -331,6 +339,8 @@ for ($i = 0; $i < $size; $i++)
         <label for="agreement">I understand that modifying survey pairings will overwrite all previously supplied pairings for this survey. In addition, any scores associated with these prior pairings will be lost.</label><br /><br />
         
         <input type="hidden" name="survey" value="<?php echo $sid; ?>" />
+        
+        <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
         
         <input type="submit" class="w3-button w3-blue" value="Modify Survey Pairings" />
       </form>

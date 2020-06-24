@@ -38,10 +38,18 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
   
   // make sure values exist
-  if (!isset($_POST['course-code']) or !isset($_POST['course-name']) or !isset($_POST['course-year']) or !isset($_FILES['roster-file']))
+  if (!isset($_POST['course-code']) or !isset($_POST['course-name']) or !isset($_POST['course-year']) or !isset($_FILES['roster-file']) or !isset($_POST['csrf-token']))
   {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
+    exit();
+  }
+  
+  // check CSRF token
+  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']))
+  {
+    http_response_code(403);
+    echo "Forbidden: Incorrect parameters.";
     exit();
   }
   
@@ -51,9 +59,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
   {
     $errorMsg['course-code'] = 'Course code cannot be blank.';
   }
-  else if (!preg_match("/^[a-zA-Z0-9]*$/", $course_code))
+  else if (!ctype_print($course_code))
   {
-    $errorMsg["course-code"] = "Please enter a valid course code.";
+    $errorMsg["course-code"] = "Course code cannot contain unprintable characters.";
   }
   
   $course_name = trim($_POST['course-name']);
@@ -61,9 +69,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
   {
     $errorMsg['course-name'] = 'Course name cannot be blank.';
   }
-  else if (!preg_match("/^[a-zA-Z0-9\/&\-',\\s]*$/", $course_name))
+  else if (!ctype_print($course_name))
   {    
-    $errorMsg["course-name"] = "Please enter a valid course name.";
+    $errorMsg["course-name"] = "Course name cannot contain unprintable characters.";
   } 
 
   if (!isset($_POST['semester']))
@@ -93,7 +101,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
   }
   else if(!preg_match("/^[0-9]*$/",$course_year) || strlen($course_year) != 4)
   {
-    $errorMsg["course-year"] = "Please enter a valid year.";
+    $errorMsg["course-year"] = "Please enter a valid 4-digit year.";
   }
   
   // now validate the roster file
@@ -276,6 +284,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     <span class="w3-card w3-red"><?php if(isset($errorMsg["roster-file"])) {echo $errorMsg["roster-file"];} ?></span><br />
     <label for="roster-file">Roster (CSV File):</label><br>
     <input type="file" id="roster-file" class="w3-input w3-border" style="width:30%" name="roster-file"><br>
+    
+    <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
     
     <input class="w3-button w3-blue" type="submit" value="Add Course">
 </form>

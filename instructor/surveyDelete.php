@@ -48,10 +48,18 @@ if($_SERVER['REQUEST_METHOD'] == 'GET')
 else
 {
   // respond bad request if bad post parameters
-  if (!isset($_POST['survey']))
+  if (!isset($_POST['survey']) or !isset($_POST['csrf-token']))
   {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
+    exit();
+  }
+  
+  // check CSRF token
+  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']))
+  {
+    http_response_code(403);
+    echo "Forbidden: Incorrect parameters.";
     exit();
   }
 
@@ -159,6 +167,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         <label for="agreement">I understand that deleting this survey will delete all scores associated with this survey.</label><br /><br />
         
         <input type="hidden" name="survey" value="<?php echo $sid; ?>" />
+        
+        <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
         
         <input type="submit" class="w3-button w3-red" value="Delete Survey" />
       </form>

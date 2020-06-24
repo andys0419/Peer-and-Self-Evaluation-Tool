@@ -104,10 +104,18 @@ if ($result->num_rows > 0)
 if($_SERVER['REQUEST_METHOD'] == 'POST')
 {
   // make sure values exist
-  if (!isset($_FILES['roster-file']))
+  if (!isset($_FILES['roster-file']) or !isset($_POST['csrf-token']))
   {
     http_response_code(400);
     echo "Bad Request: Missing parmeters.";
+    exit();
+  }
+  
+  // check CSRF token
+  if (!hash_equals($instructor->csrf_token, $_POST['csrf-token']))
+  {
+    http_response_code(403);
+    echo "Forbidden: Incorrect parameters.";
     exit();
   }
   
@@ -309,6 +317,8 @@ while ($row = $result->fetch_assoc())
         <label for="agreement">I understand that modifying the course roster will overwrite all previously supplied roster information for this course.</label><br /><br />
         
         <input type="hidden" name="course" value="<?php echo $cid; ?>" />
+        
+        <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
         
         <input type="submit" class="w3-button w3-blue" value="Modify Course Roster" />
       </form>
