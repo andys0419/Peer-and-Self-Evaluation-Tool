@@ -140,7 +140,7 @@ CREATE TABLE `student_login` (
 
   `id` INT NOT NULL AUTO_INCREMENT,
   `email` VARCHAR(255) NOT NULL,
-  `password` VARCHAR(255) NOT NULL,
+  `password` VARCHAR(255),
   `expiration_time` INT NOT NULL,
   
   PRIMARY KEY (`id`),

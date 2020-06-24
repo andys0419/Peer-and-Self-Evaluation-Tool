@@ -1,4 +1,3 @@
-<!DOCTYPE HTML>
 <?php
 //error logging
 error_reporting(-1); // reports all errors
@@ -19,8 +18,8 @@ $con = connectToDatabase();
 $group_members=array();
 $group_IDs=array();
 
-$stmt = $con->prepare('SELECT students.name, students.student_ID FROM teammates
-	                     INNER JOIN students ON teammates.teammate_ID = students.student_ID WHERE teammates.survey_ID =? AND teammates.student_ID=?;');
+$stmt = $con->prepare('SELECT students.name, students.student_id FROM reviewers
+	                     INNER JOIN students ON reviewers.reviewee_id=students.student_id WHERE reviewers.survey_id=? AND reviewers.reviewer_id=?;');
 $stmt->bind_param('ii',$surveys_ID,$student_ID);
 $stmt->execute();
 $stmt->bind_result($group_member,$group_ID);
@@ -38,31 +37,18 @@ if (!isset($_SESSION['group_member_number'])){
 $Name =  $group_members[$_SESSION['group_member_number']];
 $name_ID = $group_IDs[$_SESSION['group_member_number']];
 
-//fetch eval id, if it exists
-$stmt = $con->prepare('SELECT id FROM eval WHERE survey_id=? AND submitter_ID=? AND teammate_id=?');
+//fetch eval id
+$stmt = $con->prepare('SELECT id FROM reviewers WHERE survey_id=? AND reviewer_id=? AND reviewee_id=?');
 $stmt->bind_param('iii', $surveys_ID, $student_ID,$name_ID);
 $stmt->execute();
 $stmt->bind_result($eval_ID);
 $stmt->store_result();
 $stmt->fetch();
-if ($stmt->num_rows == 0){
-  //create eval id if does not exist and get get the eval_ID
-	$stmt = $con->prepare('INSERT INTO eval (survey_id, submitter_ID, teammate_ID) VALUES(?, ?, ?)');
-	$stmt->bind_param('iii', $surveys_ID, $student_ID,$name_ID);
-	$stmt->execute();
-
-	$stmt = $con->prepare('SELECT id FROM eval WHERE survey_id=? AND submitter_ID=? AND teammate_ID=?');
-	$stmt->bind_param('iii', $surveys_ID, $student_ID,$name_ID);
-	$stmt->execute();
-	$stmt->bind_result($eval_ID);
-	$stmt->store_result();
-	$stmt->fetch();
-}
 
 // force students to submit results
 $student_scores=array(-1,-1,-1,-1,-1);
 //grab scores if they exist
-$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE eval_id=?');
+$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE reviewers_id=?');
 $stmt->bind_param('i', $eval_ID);
 $stmt->execute();
 $stmt->bind_result($score1, $score2, $score3, $score4, $score5);
@@ -72,23 +58,49 @@ while ($stmt->fetch()) {
 }
 //When submit button is pressed
 if ( !empty($_POST) && isset($_POST)) {
-	//save results
+	
+  // make sure fields exist
+  if (!isset($_POST['Q1']) or !isset($_POST['Q2']) or !isset($_POST['Q3']) or !isset($_POST['Q4']) or !isset($_POST['Q5']))
+  {
+    http_response_code(400);
+    echo "Bad Request: Missing parmeters.";
+    exit();
+  }
+  
+  // make sure input is numeric
+  if (!ctype_digit($_POST['Q1']) or !ctype_digit($_POST['Q2']) or !ctype_digit($_POST['Q3']) or !ctype_digit($_POST['Q4']) or !ctype_digit($_POST['Q5']))
+  {
+    http_response_code(400);
+    echo "Bad Request: Missing parmeters.";
+    exit();
+  }
+  
+  //save results
 	$a=intval($_POST['Q1']);
 	$b=intval($_POST['Q2']);
 	$c=intval($_POST['Q3']);
 	$d=intval($_POST['Q4']);
 	$e=intval($_POST['Q5']);
+  
+  // make sure scores fall in range
+  if (($a < 0 or $a > 3) or ($b < 0 or $b > 3) or ($c < 0 or $c > 3) or ($d < 0 or $d > 3) or ($e < 0 or $e > 3))
+  {
+    http_response_code(400);
+    echo "Bad Request: Invalid parmeters.";
+    exit();
+  }
+  
   //if scores don't exist
 	if($student_scores[1] == -1){
-    $stmt = $con->prepare('INSERT INTO scores (score1, score2, score3, score4, score5, eval_id) VALUES(?,?,?,?,?,?)');
+    $stmt = $con->prepare('INSERT INTO scores (score1, score2, score3, score4, score5, reviewers_id) VALUES(?,?,?,?,?,?)');
     $stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_ID);
     $stmt->execute();
 	 } else {
-    $stmt = $con->prepare('UPDATE scores set score1=?, score2=?, score3=?, score4=?, score5=? WHERE eval_id=?');
+    $stmt = $con->prepare('UPDATE scores set score1=?, score2=?, score3=?, score4=?, score5=? WHERE reviewers_id=?');
     $stmt->bind_param('iiiiii',$a, $b,$c,$d,$e , $eval_ID);
     $stmt->execute();
   }
-	$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE eval_id=?');
+	$stmt = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE reviewers_id=?');
 	$stmt->bind_param('i', $eval_ID);
 	$stmt->execute();
 	$stmt->bind_result($score1, $score2, $score3, $score4, $score5);
@@ -122,6 +134,7 @@ if ( !empty($_POST) && isset($_POST)) {
 	}
 }
 ?>
+<!DOCTYPE HTML>
 <html>
 <title>UB CSE Peer Evaluation</title>
 <meta charset="UTF-8">
