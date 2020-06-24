@@ -138,5 +138,53 @@ for ($i = 0; $i < $size; $i++)
     $pairings[$i]['score5'] = $data_scores[0]['score5'];
   }  
 }
-echo var_dump($pairings);
 ?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="../styles/surveys.css">
+    <title>Survey Results</title>
+</head>
+<body>
+    <div class="w3-container w3-center">
+        <h2>Download Survey Results</h2>
+        <a href="resultsDownload.php?survey_id=<?php echo $sid; ?>&type=raw"><button class="w3-button w3-blue">Download Raw Survey Results</button></a>
+        <a href="resultsDownload.php?survey_id=<?php echo $sid; ?>&type=normalized"><button class="w3-button w3-blue">Download Normalized Survey Results</button></a>
+    </div>
+    <hr />
+    <div class="w3-container w3-center">
+        <h2>View Survey Results</h2>
+    </div>
+    <table class="w3-table" border=1.0 style="width:100%">
+        <tr>
+        <th>Reviewer Email (Name)</th>
+        <th>Reviewee Email (Name)</th>
+        <th>Score 1</th>
+        <th>Score 2</th>
+        <th>Score 3</th>
+        <th>Score 4</th>
+        <th>Score 5</th>
+        </tr>
+        <?php 
+          foreach ($pairings as $pair)
+          { 
+            echo '<tr><td>' . htmlspecialchars($pair['reviewer_email'] . ' (' . $pair['reviewer_name'] . ')') . '</td><td>' . htmlspecialchars($pair['teammate_email'] . ' (' . $pair['teammate_name'] . ')') . '</td>';
+            
+            if ($pair['score1'] === NO_SCORE_MARKER)
+            {
+              echo '<td>Data Missing</td><td>Data Missing</td><td>Data Missing</td><td>Data Missing</td><td>Data Missing</td></tr>';
+            }
+            else
+            {
+              echo '<td>' . $pair['score1'] . '</td><td>' . $pair['score2'] . '</td><td>' . $pair['score3'] . '</td><td>' . $pair['score4'] . '</td><td>' . $pair['score5'] . '</td></tr>';
+            }
+          }
+          ?>
+    </table>
+</body>
+</html>
