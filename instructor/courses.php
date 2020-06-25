@@ -87,7 +87,7 @@ while ($row = $result->fetch_assoc())
     ?>
     
     <div class="w3-responsive">
-    <table class="w3-table" border=1 style=width:100%>
+    <table class="w3-table w3-mobile" border=1 style=width:100%>
       <tr>
       <th>Code</th>
       <th>Name</th>

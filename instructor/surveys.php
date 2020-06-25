@@ -162,6 +162,7 @@ foreach($courses as $course) {
       }
       
     ?>
+    
     <div class="w3-responsive">
     <h3>Upcoming Surveys</h3>
     <table class="w3-table" border=1.0 style="width:100%">
