@@ -154,7 +154,7 @@ foreach($courses as $course) {
     </table>
 <body>
 
-<div class = "center">
+<div class = "w3-center">
     <a href="addSurveys.php"><button class="w3-button w3-blue">+ Add Survey</button></a>
 </div> 
 
