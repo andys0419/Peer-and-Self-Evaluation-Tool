@@ -85,15 +85,15 @@ foreach($courses as $course) {
 </head>
 <body>
 
- <div class="icon-bar">
-  <a class="active" href="surveys.php"><i class="disable"><img src ="../icons/survey.png" width="50" height="50" class="img-center"> Surveys</i></a>
+ <div class="w3-bar w3-blue">
+  <a class="active" href="surveys.php"><i class="w3-bar-item w3-button w3-mobile"><img src ="../icons/survey.png" width="50" height="50" class="img-center"> Surveys</i></a>
   
-  <a href="question-banks.php" class="disable"><i class="question"><img src="../icons/check.png" width="50" height="50"  class="img-center"> Question Banks </i></a>
+  <a href="question-banks.php" class="w3-bar-item w3-button w3-mobile"><i class="question"><img src="../icons/check.png" width="50" height="50"  class="img-center"> Question Banks </i></a>
   
-  <a href="courses.php"><i class="courses"><img src ="../icons/online-learning.png" width="50" height="50" class="img-center">Courses</i></a>
+  <a href="courses.php"><i class="w3-bar-item w3-button w3-mobile"><img src ="../icons/online-learning.png" width="50" height="50" class="img-center">Courses</i></a>
   
-  <a href="logout.php" class="disable"><i class="logout"><img src="../icons/logout.png" width="50" height="50"  class="img-center"> Logout </i></a>
-
+  <a href="logout.php" class="w3-bar-item w3-button w3-mobile"><i class="logout"><img src="../icons/logout.png" width="50" height="50"  class="img-center"> Logout </i></a>
+  <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
 </div>
 
 
