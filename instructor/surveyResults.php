@@ -155,6 +155,7 @@ for ($i = 0; $i < $size; $i++)
         <h2>Download Survey Results</h2>
         <a href="resultsDownload.php?survey=<?php echo $sid; ?>&type=raw" target="_blank"><button class="w3-button w3-blue">Download Raw Survey Results</button></a>
         <a href="resultsDownload.php?survey=<?php echo $sid; ?>&type=normalized" target="_blank"><button class="w3-button w3-blue">Download Normalized Survey Results</button></a>
+        <a href="resultsDownload.php?survey=<?php echo $sid; ?>&type=average" target="_blank"><button class="w3-button w3-blue">Download Average Normalized Survey Results</button></a>
     </div>
     <hr />
     <div class="w3-container w3-center">
@@ -169,6 +170,7 @@ for ($i = 0; $i < $size; $i++)
         <th>Score 3</th>
         <th>Score 4</th>
         <th>Score 5</th>
+        <th>Normalized Score</th>
         </tr>
         <?php 
           foreach ($pairings as $pair)
@@ -177,14 +179,27 @@ for ($i = 0; $i < $size; $i++)
             
             if ($pair['score1'] === NO_SCORE_MARKER)
             {
-              echo '<td>Data Missing</td><td>Data Missing</td><td>Data Missing</td><td>Data Missing</td><td>Data Missing</td></tr>';
+              echo '<td>Data Missing</td><td>Data Missing</td><td>Data Missing</td><td>Data Missing</td><td>Data Missing</td>';
             }
             else
             {
-              echo '<td>' . $pair['score1'] . '</td><td>' . $pair['score2'] . '</td><td>' . $pair['score3'] . '</td><td>' . $pair['score4'] . '</td><td>' . $pair['score5'] . '</td></tr>';
+              echo '<td>' . $pair['score1'] . '</td><td>' . $pair['score2'] . '</td><td>' . $pair['score3'] . '</td><td>' . $pair['score4'] . '</td><td>' . $pair['score5'] . '</td>';
             }
+            
+            echo '<td>Placeholder</td></tr>';
+            
           }
           ?>
+    </table>
+    <hr />
+    <div class="w3-container w3-center">
+        <h2>View Average Normalized Survey Results</h2>
+    </div>
+    <table class="w3-table" border=1.0 style="width:100%">
+        <tr>
+        <th>Reviewee Email (Name)</th>
+        <th>Average Normalized Score</th>
+        </tr>
     </table>
 </body>
 </html>
