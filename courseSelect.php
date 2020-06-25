@@ -6,7 +6,7 @@
   require "lib/constants.php";
 
   if(!isset($_SESSION['id'])) {
-    header("Location: ".SITE_HOME."index.php");
+    header("Location: index.php");
     exit();
   }
   $email = $_SESSION['email'];
@@ -93,7 +93,7 @@ ON reviewers.survey_id = surveys.id INNER JOIN course on course.id = surveys.cou
       <?php
         if(isset($_SESSION['student_classes'])) {
           foreach ($student_classes as $key => $value) {
-            echo ('<option value="' . $key .'">' . $key .'</option>');
+            echo ('<option value="' . $key .'">' . htmlspecialchars($key) .'</option>');
           }
         }
       ?>

@@ -188,14 +188,14 @@ option {
 
 <!-- Header -->
 <header id="header" class="w3-container w3-theme w3-padding">
-  <div id="headerContentName"><font color="black"><h1><?php echo $_SESSION['course'];?> Teamwork Evaluation Form</h1></font></div>
+  <div id="headerContentName"><font color="black"><h1><?php echo htmlspecialchars($_SESSION['course']);?> Teamwork Evaluation Form</h1></font></div>
 </header>
 
 <hr>
 <div id="login" class="w3-row-padding w3-padding">
   <form id="peerEval" class="w3-container w3-card-4 w3-light-blue" method='post'>
-    <h1>Current person you're evaluating: <?php echo $Name?></h1>
-		<h4>Evaluation <?php echo($_SESSION['group_member_number']+1)?> of <?php echo($num_of_group_members)?> </h4>
+    <h1>Current person you're evaluating: <?php echo htmlspecialchars($Name);?></h1>
+		<h4>Evaluation <?php echo($_SESSION['group_member_number']+1);?> of <?php echo($num_of_group_members);?> </h4>
     <hr>
     <h1>For each prompt, select the description that best fits their performance on your team</h1>
     <hr>
