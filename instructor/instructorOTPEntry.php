@@ -80,7 +80,7 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') and ($instructor->init_auth_status !=
       
       // redirect the instructor to the next page
       http_response_code(302);   
-      header("Location: dashboard.php");
+      header("Location: surveys.php");
       exit();
       
     }
