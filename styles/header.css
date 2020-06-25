@@ -22,10 +22,19 @@
   background-color: #45565c;
 }
 
-.center {
+.img-center {
   display: block;
   margin-left: auto;
   margin-right: auto;
   width: 50%;
 } 
     
+.disable{ 
+	pointer-events:none;
+	cursor: default
+ }
+
+i.hello{
+position: absolute;
+right: 0px
+}

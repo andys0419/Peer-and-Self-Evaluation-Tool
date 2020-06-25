@@ -42,17 +42,18 @@ $instructor->check_session($con, 0);
   </div>
   
   <div class="icon-bar">
-  <a class="active" href="dashboard.php"><i class="fa fa-home"><img src="../ico\
-ns/home.png" width="50" height="50" class="center">Home</i></a>
-  <a href="surveys.php"><i class="fa fa-survey"><img src ="../icons/survey.png"\
- width="50" height="50" class="center"> Surveys</i></a>
-  <a href="question-banks.php"><i class="fa fa-question"><img src="../icons/che\
-ck.png" width="50" height="50"  class="center"> Question Banks </i></a>
-  <a href="courses.php"><i class="fa fa-courses"><img src ="../icons/online-lea\
-rning.png" width="50" height="50"  class="center">Courses</i></a>
-  <a href="logout.php"><i class="fa fa-logout"><img src="../icons/logout.png"  \
-width="50" height="50"  class="center"> Logout </i></a>
-<i class="fa fa-hello">Welcome, <?php echo htmlspecialchars($instructor->name); ?></i>
+  <a class="active" href="dashboard.php"><i class="home"><img src="../icons/home.png" width="50" height="50" class="img-center">Home</i></a>
+
+  <a href="surveys.php"><i class="survey"><img src ="../icons/survey.png" width="50" height="50" class="img-center"> Surveys</i></a>
+  
+  <a href="question-banks.php" class="disable"><i class="question"><img src="../icons/check.png" width="50" height="50"  class="img-center"> Question Banks </i></a>
+  
+  <a href="courses.php"><i class="courses"><img src ="../icons/online-learning.png" width="50" height="50" class="img-center">courses</i></a>
+  
+  <a href="logout.php" class="disable"><i class="logout"><img src="../icons/logout.png" width="50" height="50"  class="img-center"> Logout </i></a>
+  
+<a class="disable"> <i class="hello">Welcome, <?php echo htmlspecialchars($instructor->name); ?></a></i>
+
 </div>
 </body>
 </html>
