@@ -178,7 +178,7 @@ foreach($courses as $course) {
           foreach ($surveys_active as $survey)
           { 
             echo '<tr><td>' . htmlspecialchars($courses[$survey['course_id']]['code'] . ' ' . $courses[$survey['course_id']]['name'] . ' - ' . $courses[$survey['course_id']]['semester'] . ' ' . $courses[$survey['course_id']]['year']) . '</td>';
-            echo '<td>' . $survey['completion'] . '</td><td>' . $survey['start_date'] . '</td><td>' . $survey['expiration_date'] . '</td><td><a href="surveyPairings.php?survey=' . $survey['id'] . '">View Pairings</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete Survey</a> | <a href="surveyResults.php?survey=' . $survey['id']. '">Survey Results</a></td></tr>';
+            echo '<td>' . $survey['completion'] . '</td><td>' . $survey['start_date'] . '</td><td>' . $survey['expiration_date'] . '</td><td><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyPairings.php?survey=' . $survey['id'] . '">View Pairings</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete Survey</a></td></tr>';
           }
           ?>
     </table>
@@ -195,7 +195,7 @@ foreach($courses as $course) {
           foreach ($surveys_expired as $survey)
           { 
             echo '<tr><td>' . htmlspecialchars($courses[$survey['course_id']]['code'] . ' ' . $courses[$survey['course_id']]['name'] . ' - ' . $courses[$survey['course_id']]['semester'] . ' ' . $courses[$survey['course_id']]['year']) . '</td>';
-            echo '<td>' . $survey['completion'] . '</td><td>' . $survey['start_date'] . '</td><td>' . $survey['expiration_date'] . '</td><td><a href="surveyPairings.php?survey=' . $survey['id'] . '">View Pairings</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete Survey</a> | <a href="surveyResults.php?survey=' . $survey['id']. '">Survey Results</a></td></tr>';
+            echo '<td>' . $survey['completion'] . '</td><td>' . $survey['start_date'] . '</td><td>' . $survey['expiration_date'] . '</td><td><a href="surveyResults.php?survey=' . $survey['id']. '">View Results</a> | <a href="surveyPairings.php?survey=' . $survey['id'] . '">View Pairings</a> | <a href="surveyDelete.php?survey=' . $survey['id'] . '">Delete Survey</a></td></tr>';
           }
           ?>
     </table>
