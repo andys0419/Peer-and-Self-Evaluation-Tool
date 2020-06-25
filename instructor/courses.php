@@ -86,6 +86,7 @@ while ($row = $result->fetch_assoc())
       
     ?>
     
+    <div class="w3-responsive">
     <table class="w3-table" border=1 style=width:100%>
       <tr>
       <th>Code</th>
@@ -101,6 +102,7 @@ while ($row = $result->fetch_assoc())
         }
       ?>
     </table>
+    </div>
     <br />
 <div class = "w3-center w3-mobile">
     <a href="addCourses.php"><button class="w3-button w3-dark-grey">+ Add Course</button></a>

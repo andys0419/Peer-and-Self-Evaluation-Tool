@@ -116,7 +116,7 @@ foreach($courses as $course) {
       }
       
     ?>
-
+    <div class="w3-responsive">
     <table class="w3-table" border=1.0 style=width:100%>
         <tr>
         <th>Course</th>
@@ -152,6 +152,7 @@ foreach($courses as $course) {
           }
       ?>
     </table>
+    </div>
     <br />
 
 <div class = "w3-center w3-mobile">
