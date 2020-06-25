@@ -277,15 +277,13 @@ for ($i = 0; $i < $size; $i++)
 </head>
 <body>
   
-    <div class="icon-bar">
-      <a href="surveys.php"><i class="survey"><img src ="../icons/survey.png" width="50" height="50" class="img-center"> Surveys</i></a>
-  
-      <a href="question-banks.php" class="disable"><i class="question"><img src="../icons/check.png" width="50" height="50"  class="img-center"> Question Banks </i></a>
-  
-      <a class="active" href="courses.php"><i class="disable"><img src ="../icons/online-learning.png" width="50" height="50" class="img-center">Courses</i></a>
-  
-      <a href="logout.php" class="disable"><i class="logout"><img src="../icons/logout.png" width="50" height="50"  class="img-center"> Logout </i></a>
-
+    <div class="w3-bar w3-blue">
+      <a href="surveys.php" class="w3-bar-item w3-button w3-mobile">Surveys</a>
+      <!---Disabled href="question-banks.php"-->
+      <a class="w3-bar-item w3-button w3-mobile">Question Banks</a>
+      <a href="courses.php" class="w3-bar-item w3-button w3-mobile">Courses</a>
+      <!---Disabled href="logout.php"-->
+      <a class="w3-bar-item w3-button w3-mobile w3-right">Logout</a>
     </div>
 
     <div class="w3-container w3-center">
