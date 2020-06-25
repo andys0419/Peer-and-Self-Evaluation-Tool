@@ -102,7 +102,7 @@ while ($row = $result->fetch_assoc())
       ?>
     </table>
     <br />
-<div class = "center">
+<div class = "w3-center w3-mobile">
     <a href="addCourses.php"><button class="w3-button w3-dark-grey">+ Add Course</button></a>
 </div> 
 
