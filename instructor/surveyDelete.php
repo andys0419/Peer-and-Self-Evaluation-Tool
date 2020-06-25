@@ -149,7 +149,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 </head>
 <body>
 
-    <div class="w3-bar w3-blue">
+    <div class="w3-bar w3-blue w3-mobile">
       <a href="surveys.php" class="w3-bar-item w3-button w3-mobile">Surveys</a>
       <!---Disabled href="question-banks.php"-->
       <a class="w3-bar-item w3-button w3-mobile">Question Banks</a>
