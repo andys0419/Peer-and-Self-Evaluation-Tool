@@ -132,8 +132,6 @@ foreach($courses as $course) {
 <body>
 
  <div class="icon-bar">
-  <a href="dashboard.php"><i class="home"><img src="../icons/home.png" width="50" height="50" class="img-center">Home</i></a>
-
   <a class="active" href="surveys.php"><i class="disable"><img src ="../icons/survey.png" width="50" height="50" class="img-center"> Surveys</i></a>
   
   <a href="question-banks.php" class="disable"><i class="question"><img src="../icons/check.png" width="50" height="50"  class="img-center"> Question Banks </i></a>
