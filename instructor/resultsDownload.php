@@ -248,4 +248,34 @@ if ($_GET['type'] === 'normalized')
   exit();
 }
 
+// now start with average normalized output
+// finally, loop through the reviewees list to calculate the average normalized scores
+$r_keys = array_keys($reviewees_info);
+$r_size = count($r_keys);
+for ($i = 0; $i < $r_size; $i++)
+{
+  // only calculate score for reviewees that have at least one evaluation submitted for them
+  if ($reviewees_info[$r_keys[$i]]['num_of_evals'] !== 0)
+  {
+    $reviewees_info[$r_keys[$i]]['average_normalized_score'] = $reviewees_info[$r_keys[$i]]['running_sum'] / $reviewees_info[$r_keys[$i]]['num_of_evals'];
+  }
+  
+  // generate average output
+  $average_output .= $reviewees_info[$r_keys[$i]]['teammate_email'] . ", " . $reviewees_info[$r_keys[$i]]['average_normalized_score'] . ",\n";
+}
+
+// now generate the average normalized scores output
+// remove the trailing comma
+if (strlen($average_output) > 1)
+{
+  $average_output[-2] = " ";
+}
+
+// start the download
+// generate the correct headers for the file download
+header('Content-Type: text/plain; charset=UTF-8');
+header('Content-Disposition: attachment; filename="survey-' . $sid . '-average-normalized-results.txt"');
+
+// ouput the data
+echo $average_output;
 ?>
