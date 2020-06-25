@@ -19,7 +19,9 @@
 }
 
 .active {
-  background-color: #45565c;
+    background-color: #45565c;
+    pointer-events: none;
+    cursor: default
 }
 
 .img-center {
@@ -36,5 +38,6 @@
 
 i.hello{
 position: absolute;
-right: 0px
+right: 0px;
+vertical-align:text-bottom
 }
