@@ -90,7 +90,7 @@ foreach($courses as $course) {
   
   <a href="question-banks.php" class="disable"><i class="question"><img src="../icons/check.png" width="50" height="50"  class="img-center"> Question Banks </i></a>
   
-  <a href="courses.php"><i class="courses"><img src ="../icons/online-learning.png" width="50" height="50" class="img-center">courses</i></a>
+  <a href="courses.php"><i class="courses"><img src ="../icons/online-learning.png" width="50" height="50" class="img-center">Courses</i></a>
   
   <a href="logout.php" class="disable"><i class="logout"><img src="../icons/logout.png" width="50" height="50"  class="img-center"> Logout </i></a>
 
