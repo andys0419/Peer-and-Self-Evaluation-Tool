@@ -80,9 +80,25 @@ foreach($courses as $course) {
     <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../styles/surveys.css">
+    <link rel="stylesheet" type="text/css" href="../styles/header.css">
     <title>Surveys</title>
 </head>
 <body>
+
+ <div class="icon-bar">
+  <a href="dashboard.php"><i class="home"><img src="../icons/home.png" width="50" height="50" class="img-center">Home</i></a>
+
+  <a class="active" href="surveys.php"><i class="disable"><img src ="../icons/survey.png" width="50" height="50" class="img-center"> Surveys</i></a>
+  
+  <a href="question-banks.php" class="disable"><i class="question"><img src="../icons/check.png" width="50" height="50"  class="img-center"> Question Banks </i></a>
+  
+  <a href="courses.php"><i class="courses"><img src ="../icons/online-learning.png" width="50" height="50" class="img-center">courses</i></a>
+  
+  <a href="logout.php" class="disable"><i class="logout"><img src="../icons/logout.png" width="50" height="50"  class="img-center"> Logout </i></a>
+
+</div>
+
+
     <div class="w3-container w3-center">
         <h2>Instructor Surveys</h2>
     </div>
