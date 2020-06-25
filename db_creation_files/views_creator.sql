@@ -51,6 +51,17 @@ FROM (((`evals_by_student` `ebs`
 GROUP BY `ebs`.`course_id`,`ebs`.`survey_id`,`ebs`.`teammate_id`,`students`.`email`
 ORDER BY `ebs`.`course_id`,`ebs`.`survey_id`,`ebs`.`teammate_id`;
 
+-- normalized_score VIEW 2
+-- query that calculates each students overall NORMALIZED score for a given survey and considers partial data
+CREATE VIEW `normalized_student_score2` AS
+SELECT `ebs`.`course_id` AS `course_id`,`ebs`.`survey_id` AS `survey_id`,`ebs`.`teammate_id` AS `evaluatee_id`,`students`.`email` AS `email`, avg(((((((`ebs`.`score1` + `ebs`.`score2`) + `ebs`.`score3`) + `ebs`.`score4`) + `ebs`.`score5`) / `tpps`.`TOTAL_POINTS`) * `tpps`.`EVALUATIONS`)) AS `normalized_score`
+FROM (((`evals_by_student` `ebs`
+  JOIN `total_points_per_submission` `tpps` on(((`ebs`.`course_id` = `tpps`.`course_id`) and (`ebs`.`survey_id` = `tpps`.`survey_id`) and (`ebs`.`submitter_id` = `tpps`.`submitter_id`))))
+  JOIN `expected_evals` on(((`expected_evals`.`course_id` = `tpps`.`course_id`) and (`expected_evals`.`survey_id` = `tpps`.`survey_id`) and (`expected_evals`.`student_id` = `tpps`.`submitter_id`))))
+  JOIN `students` on((`students`.`student_id` = `ebs`.`teammate_id`)))
+GROUP BY `ebs`.`course_id`,`ebs`.`survey_id`,`ebs`.`teammate_id`,`students`.`email`
+ORDER BY `ebs`.`course_id`,`ebs`.`survey_id`,`ebs`.`teammate_id`;
+
 -- readable_evals view
 -- query that generates an easy to read listing of evaluations; MHz originally created this for debugging, but it also helps when handling student complaints
 CREATE VIEW `readable_evals` AS
