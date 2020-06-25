@@ -217,4 +217,4 @@ foreach($courses as $course) {
     <a href="addSurveys.php"><button class="w3-button w3-blue">+ Add Survey</button></a>
 </div> 
 </body>
-</html> 
+</html>
