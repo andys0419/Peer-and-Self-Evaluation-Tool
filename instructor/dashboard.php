@@ -40,7 +40,6 @@ $instructor->check_session($con, 0);
         <img src="../images/logo_UB.png" width="150" height="100" alt="UB Logo">
         <p style="font-size:250%;display:inline-block" >UB CSE Peer Evaluation</p>
   </div>
-  
   <div class="icon-bar">
   <a class="active" href="dashboard.php"><i class="home"><img src="../icons/home.png" width="50" height="50" class="img-center">Home</i></a>
 
@@ -55,5 +54,6 @@ $instructor->check_session($con, 0);
 <a class="disable"> <i class="hello">Welcome, <?php echo htmlspecialchars($instructor->name); ?></a></i>
 
 </div>
+
 </body>
 </html>
