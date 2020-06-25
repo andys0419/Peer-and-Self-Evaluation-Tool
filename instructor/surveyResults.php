@@ -104,7 +104,7 @@ while ($row = $result->fetch_assoc())
   }
   if (!isset($reviewees_info[$pair_info['reviewee_id']]))
   {
-    $reviewees_info[$pair_info['reviewee_id']] = array('teammate_email' => $pair_info['teammate_email'], 'average_normalized_score' => NO_SCORE_MARKER, 'num_of_evals' => 0);
+    $reviewees_info[$pair_info['reviewee_id']] = array('teammate_email' => $pair_info['teammate_email'], 'average_normalized_score' => NO_SCORE_MARKER, 'num_of_evals' => 0, 'running_sum' => 0);
   }
 }
 
@@ -134,6 +134,9 @@ for ($i = 0; $i < $size; $i++)
   $result_scores = $stmt_scores->get_result();
   $data_scores = $result_scores->fetch_all(MYSQLI_ASSOC);
   
+  // add name
+  $reviewees_info[$pairings[$i]['reviewee_id']]['teammate_name'] = $pairings[$i]['teammate_name'];
+  
   if ($result_scores->num_rows == 0)
   {
     $pairings[$i]['score1'] = NO_SCORE_MARKER;
@@ -152,14 +155,49 @@ for ($i = 0; $i < $size; $i++)
     $pairings[$i]['score5'] = $data_scores[0]['score5'];
     
     // now add the scores and adjust the number of evaluations for reviewer and reviewee
-    $reviewers_info[$pairings[$i]['reviewer_id']]['running_sum'] += $pairings[$i]['score1'] + $pairings[$i]['score2'] + $pairings[$i]['score3'] + $pairings[$i]['score4'] + $pairings[$i]['score5'];
+    $reviewers_info[$pairings[$i]['reviewer_id']]['running_sum'] += ($pairings[$i]['score1'] + $pairings[$i]['score2'] + $pairings[$i]['score3'] + $pairings[$i]['score4'] + $pairings[$i]['score5']);
     $reviewers_info[$pairings[$i]['reviewer_id']]['num_of_evals'] += 1;
-    $reviewees_info[$pairings[$i]['reviewee_id']]['num_of_evals'] += 1;
-    $reviewees_info[$pairings[$i]['reviewee_id']]['teammate_name'] = $pairings[$i]['teammate_name'];
-    
+    $reviewees_info[$pairings[$i]['reviewee_id']]['num_of_evals'] += 1;  
   }  
 }
 
+// now, loop through the pairings again to generate the normalized pairing scores and the running sum for average normalized score
+for ($i = 0; $i < $size; $i++)
+{
+  
+  // skip over pairings that do not have scores
+  if ($pairings[$i]['score1'] === NO_SCORE_MARKER)
+  {
+    continue;
+  }
+  
+  // calculate normalized pairing score
+  // set normalized score to one divided by number of evals if reviewer has not given any points to anyone
+  if ($reviewers_info[$pairings[$i]['reviewer_id']]['running_sum'] !== 0)
+  {
+    $pairings[$i]['normalized'] = ($pairings[$i]['score1'] + $pairings[$i]['score2'] + $pairings[$i]['score3'] + $pairings[$i]['score4'] + $pairings[$i]['score5']) / $reviewers_info[$pairings[$i]['reviewer_id']]['running_sum'];
+  }
+  else
+  {
+    $pairings[$i]['normalized'] = 1 / $reviewers_info[$pairings[$i]['reviewer_id']]['num_of_evals'];
+  }
+  
+  // now add the normalized score to the reviewees running sum after multiplying by number of evaluations made by reviewer
+  $reviewees_info[$pairings[$i]['reviewee_id']]['running_sum'] += ($pairings[$i]['normalized'] * $reviewers_info[$pairings[$i]['reviewer_id']]['num_of_evals']);
+  
+}
+
+// finally, loop through the reviewees list to calculate the average normalized scores
+$r_keys = array_keys($reviewees_info);
+$r_size = count($r_keys);
+for ($i = 0; $i < $r_size; $i++)
+{
+  // only calculate score for reviewees that have at least one evaluation submitted for them
+  if ($reviewees_info[$r_keys[$i]]['num_of_evals'] !== 0)
+  {
+    $reviewees_info[$r_keys[$i]]['average_normalized_score'] = $reviewees_info[$r_keys[$i]]['running_sum'] / $reviewees_info[$r_keys[$i]]['num_of_evals'];
+  }
+}
 ?>
 <!DOCTYPE html>
 <html>
@@ -181,7 +219,7 @@ for ($i = 0; $i < $size; $i++)
     </div>
     <hr />
     <div class="w3-container w3-center">
-        <h2>View Survey Results</h2>
+        <h2>Raw Survey Results</h2>
     </div>
     <table class="w3-table" border=1.0 style="width:100%">
         <tr>
@@ -197,7 +235,7 @@ for ($i = 0; $i < $size; $i++)
         <?php 
           foreach ($pairings as $pair)
           { 
-            echo '<tr><td>' . htmlspecialchars($pair['reviewer_email'] . ' (' . $pair['reviewer_name'] . ')') . '</td><td>' . htmlspecialchars($pair['teammate_email'] . ' (' . $pair['teammate_name'] . ')') . '</td>';
+            echo '<tr><td>' . htmlspecialchars($pair['reviewer_email']) . '<br />(' . htmlspecialchars($pair['reviewer_name']) . ')' . '</td><td>' . htmlspecialchars($pair['teammate_email']) . '<br />(' . htmlspecialchars($pair['teammate_name']) . ')' . '</td>';
             
             if ($pair['score1'] === NO_SCORE_MARKER)
             {
@@ -208,20 +246,43 @@ for ($i = 0; $i < $size; $i++)
               echo '<td>' . $pair['score1'] . '</td><td>' . $pair['score2'] . '</td><td>' . $pair['score3'] . '</td><td>' . $pair['score4'] . '</td><td>' . $pair['score5'] . '</td>';
             }
             
-            echo '<td>Placeholder</td></tr>';
+            if ($pair['normalized'] === NO_SCORE_MARKER)
+            {
+              echo '<td>Data Missing</td></tr>';
+            }
+            else
+            {
+              echo '<td>' . $pair['normalized'] . '</td></tr>';
+            }
             
           }
           ?>
     </table>
     <hr />
     <div class="w3-container w3-center">
-        <h2>View Average Normalized Survey Results</h2>
+        <h2>Average Normalized Survey Results</h2>
     </div>
     <table class="w3-table" border=1.0 style="width:100%">
         <tr>
         <th>Reviewee Email (Name)</th>
         <th>Average Normalized Score</th>
         </tr>
+        <?php 
+          foreach ($reviewees_info as $reviewee)
+          { 
+            echo '<tr><td>' . htmlspecialchars($reviewee['teammate_email']) . '<br />(' . htmlspecialchars($reviewee['teammate_name']) . ')' . '</td>';
+            
+            if ($reviewee['average_normalized_score'] === NO_SCORE_MARKER)
+            {
+              echo '<td>Data Missing</td></tr>';
+            }
+            else
+            {
+              echo '<td>' . $reviewee['average_normalized_score'] . '</td></tr>';
+            }
+            
+          }
+          ?>
     </table>
 </body>
 </html>
