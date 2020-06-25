@@ -152,10 +152,13 @@ foreach($courses as $course) {
           }
       ?>
     </table>
-<body>
 
 <div class = "w3-center w3-mobile">
     <a href="addSurveys.php"><button class="w3-button w3-blue">+ Add Survey</button></a>
 </div> 
+
+<body>
+
+
 
 </html> 
