@@ -76,7 +76,10 @@ if ($result->num_rows == 0)
 }
 
 // now, get information about survey pairings and scores as array of array
+// also store information about each reviewer and reviewee
 $pairings = array();
+$reviewers_info = array();
+$reviewees_info = array();
 
 // get information about the pairings
 $stmt = $con->prepare('SELECT id, reviewer_id, reviewee_id, reviewer_email, teammate_email FROM reviewers WHERE survey_id=? ORDER BY reviewee_id');
@@ -93,6 +96,16 @@ while ($row = $result->fetch_assoc())
   $pair_info['reviewer_id'] = $row['reviewer_id'];
   $pair_info['reviewee_id'] = $row['reviewee_id'];
   array_push($pairings, $pair_info);
+  
+  // initialize reviewer and reviewee info arrays
+  if (!isset($reviewers_info[$pair_info['reviewer_id']]))
+  {
+    $reviewers_info[$pair_info['reviewer_id']] = array('running_sum' => 0, 'num_of_evals' => 0);
+  }
+  if (!isset($reviewees_info[$pair_info['reviewee_id']]))
+  {
+    $reviewees_info[$pair_info['reviewee_id']] = array('teammate_email' => $pair_info['teammate_email'], 'average_normalized_score' => NO_SCORE_MARKER, 'num_of_evals' => 0);
+  }
 }
 
 // now get the names for each pairing and scores for each pairing
@@ -128,6 +141,7 @@ for ($i = 0; $i < $size; $i++)
     $pairings[$i]['score3'] = NO_SCORE_MARKER;
     $pairings[$i]['score4'] = NO_SCORE_MARKER;
     $pairings[$i]['score5'] = NO_SCORE_MARKER;
+    $pairings[$i]['normalized'] = NO_SCORE_MARKER;
   }
   else
   {
@@ -136,8 +150,16 @@ for ($i = 0; $i < $size; $i++)
     $pairings[$i]['score3'] = $data_scores[0]['score3'];
     $pairings[$i]['score4'] = $data_scores[0]['score4'];
     $pairings[$i]['score5'] = $data_scores[0]['score5'];
+    
+    // now add the scores and adjust the number of evaluations for reviewer and reviewee
+    $reviewers_info[$pairings[$i]['reviewer_id']]['running_sum'] += $pairings[$i]['score1'] + $pairings[$i]['score2'] + $pairings[$i]['score3'] + $pairings[$i]['score4'] + $pairings[$i]['score5'];
+    $reviewers_info[$pairings[$i]['reviewer_id']]['num_of_evals'] += 1;
+    $reviewees_info[$pairings[$i]['reviewee_id']]['num_of_evals'] += 1;
+    $reviewees_info[$pairings[$i]['reviewee_id']]['teammate_name'] = $pairings[$i]['teammate_name'];
+    
   }  
 }
+
 ?>
 <!DOCTYPE html>
 <html>
