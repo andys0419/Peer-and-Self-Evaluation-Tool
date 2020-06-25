@@ -267,6 +267,19 @@ while ($row = $result->fetch_assoc())
     <title>Course Roster</title>
 </head>
 <body>
+
+  <div class="icon-bar">
+    <a href="surveys.php"><i class="survey"><img src ="../icons/survey.png" width="50" height="50" class="img-center"> Surveys</i></a>
+  
+    <a href="question-banks.php" class="disable"><i class="question"><img src="../icons/check.png" width="50" height="50"  class="img-center"> Question Banks </i></a>
+  
+    <a class="active" href="courses.php"><i class="disable"><img src ="../icons/online-learning.png" width="50" height="50" class="img-center">Courses</i></a>
+  
+    <a href="logout.php" class="disable"><i class="logout"><img src="../icons/logout.png" width="50" height="50"  class="img-center"> Logout </i></a>
+
+  </div>
+
+
     <div class="w3-container w3-center">
         <h2>Course Roster</h2>
         <p><?php echo htmlspecialchars($course_info[0]['code']) . ' ' . htmlspecialchars($course_info[0]['name']) . ' - ' . htmlspecialchars(SEMESTER_MAP_REVERSE[$course_info[0]['semester']]) . ' ' . htmlspecialchars($course_info[0]['year']) ?></p>

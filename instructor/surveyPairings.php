@@ -284,6 +284,18 @@ for ($i = 0; $i < $size; $i++)
     <title>Survey Pairings</title>
 </head>
 <body>
+  
+    <div class="icon-bar">
+      <a href="surveys.php"><i class="survey"><img src ="../icons/survey.png" width="50" height="50" class="img-center"> Surveys</i></a>
+  
+      <a href="question-banks.php" class="disable"><i class="question"><img src="../icons/check.png" width="50" height="50"  class="img-center"> Question Banks </i></a>
+  
+      <a class="active" href="courses.php"><i class="disable"><img src ="../icons/online-learning.png" width="50" height="50" class="img-center">Courses</i></a>
+  
+      <a href="logout.php" class="disable"><i class="logout"><img src="../icons/logout.png" width="50" height="50"  class="img-center"> Logout </i></a>
+
+    </div>
+
     <div class="w3-container w3-center">
         <h2>Survey Pairings</h2>
     </div>

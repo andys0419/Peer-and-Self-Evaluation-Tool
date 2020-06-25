@@ -317,9 +317,20 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 </head>
 <body>
 
-<div class="w3-container w3-center">
+  <div class="icon-bar">
+    <a href="surveys.php"><i class="survey"><img src ="../icons/survey.png" width="50" height="50" class="img-center"> Surveys</i></a>
+  
+    <a href="question-banks.php" class="disable"><i class="question"><img src="../icons/check.png" width="50" height="50"  class="img-center"> Question Banks </i></a>
+  
+    <a class="active" href="courses.php"><i class="disable"><img src ="../icons/online-learning.png" width="50" height="50" class="img-center">Courses</i></a>
+  
+    <a href="logout.php" class="disable"><i class="logout"><img src="../icons/logout.png" width="50" height="50"  class="img-center"> Logout </i></a>
+
+  </div>
+
+  <div class="w3-container w3-center">
     <h2>Survey Information</h2>
-</div>
+  </div>
 
 
 <form action="addSurveys.php" method ="post" enctype="multipart/form-data" class="w3-container">
