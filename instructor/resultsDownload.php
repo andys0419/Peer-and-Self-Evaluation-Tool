@@ -126,9 +126,9 @@ while ($row = $result->fetch_assoc())
 $stmt_scores = $con->prepare('SELECT score1, score2, score3, score4, score5 FROM scores WHERE reviewers_id=?');
 
 // generate output strings on the fly
-$raw_output = "";
-$normal_output = "";
-$average_output = "";
+$raw_output = "reviewer_email,reviewee_email,raw_score1,raw_score2,raw_score3,raw_score4,raw_score5\n";
+$normal_output = "reviewer_email,reviewee_email,normalized_score\n";
+$average_output = "reviewee_email,average_normalized_score\n";
 
 $size = count($pairings);
 for ($i = 0; $i < $size; $i++)
@@ -164,23 +164,17 @@ for ($i = 0; $i < $size; $i++)
   
   if ($_GET['type'] === 'raw')
   {
-    $raw_output .= $pairings[$i]['reviewer_email'] . ', ' . $pairings[$i]['teammate_email'] . ', ' . $pairings[$i]['score1'] . ', ' . $pairings[$i]['score2'] . ', ' . $pairings[$i]['score3'] . ', ' . $pairings[$i]['score4'] . ', ' . $pairings[$i]['score5'] . ",\n";
+    $raw_output .= $pairings[$i]['reviewer_email'] . ',' . $pairings[$i]['teammate_email'] . ',' . $pairings[$i]['score1'] . ',' . $pairings[$i]['score2'] . ',' . $pairings[$i]['score3'] . ',' . $pairings[$i]['score4'] . ',' . $pairings[$i]['score5'] . "\n";
   }
 }
 
 // now generate the raw scores output
 if ($_GET['type'] === 'raw')
-{
-  // remove the trailing comma
-  if (strlen($raw_output) > 1)
-  {
-    $raw_output[-2] = " ";
-  }
-  
+{ 
   // start the download
   // generate the correct headers for the file download
-  header('Content-Type: text/plain; charset=UTF-8');
-  header('Content-Disposition: attachment; filename="survey-' . $sid . '-raw-results.txt"');
+  header('Content-Type: text/csv; charset=UTF-8');
+  header('Content-Disposition: attachment; filename="survey-' . $sid . '-raw-results.csv"');
 
   // ouput the data
   echo $raw_output;
@@ -195,7 +189,7 @@ for ($i = 0; $i < $size; $i++)
   // generate initial part of normal output
   if ($_GET['type'] === 'normalized')
   {
-    $normal_output .= $pairings[$i]['reviewer_email'] . ", " . $pairings[$i]['teammate_email'] . ", ";
+    $normal_output .= $pairings[$i]['reviewer_email'] . "," . $pairings[$i]['teammate_email'] . ",";
   }
   
   // skip over pairings that do not have scores and mark this on the line
@@ -203,7 +197,7 @@ for ($i = 0; $i < $size; $i++)
   {
     if ($_GET['type'] === 'normalized')
     {
-      $normal_output .= $pairings[$i]['normalized'] . ",\n";
+      $normal_output .= $pairings[$i]['normalized'] . "\n";
     }
     continue;
   }
@@ -225,23 +219,17 @@ for ($i = 0; $i < $size; $i++)
   // generate normal raw output
   if ($_GET['type'] === 'normalized')
   {
-    $normal_output .= $pairings[$i]['normalized'] . ",\n";
+    $normal_output .= $pairings[$i]['normalized'] . "\n";
   }
 }
 
 // now generate the normalized scores output
 if ($_GET['type'] === 'normalized')
 {
-  // remove the trailing comma
-  if (strlen($normal_output) > 1)
-  {
-    $normal_output[-2] = " ";
-  }
-  
   // start the download
   // generate the correct headers for the file download
-  header('Content-Type: text/plain; charset=UTF-8');
-  header('Content-Disposition: attachment; filename="survey-' . $sid . '-normalized-results.txt"');
+  header('Content-Type: text/csv; charset=UTF-8');
+  header('Content-Disposition: attachment; filename="survey-' . $sid . '-normalized-results.csv"');
 
   // ouput the data
   echo $normal_output;
@@ -261,20 +249,14 @@ for ($i = 0; $i < $r_size; $i++)
   }
   
   // generate average output
-  $average_output .= $reviewees_info[$r_keys[$i]]['teammate_email'] . ", " . $reviewees_info[$r_keys[$i]]['average_normalized_score'] . ",\n";
+  $average_output .= $reviewees_info[$r_keys[$i]]['teammate_email'] . "," . $reviewees_info[$r_keys[$i]]['average_normalized_score'] . "\n";
 }
 
 // now generate the average normalized scores output
-// remove the trailing comma
-if (strlen($average_output) > 1)
-{
-  $average_output[-2] = " ";
-}
-
 // start the download
 // generate the correct headers for the file download
-header('Content-Type: text/plain; charset=UTF-8');
-header('Content-Disposition: attachment; filename="survey-' . $sid . '-average-normalized-results.txt"');
+header('Content-Type: text/csv; charset=UTF-8');
+header('Content-Disposition: attachment; filename="survey-' . $sid . '-average-normalized-results.csv"');
 
 // ouput the data
 echo $average_output;

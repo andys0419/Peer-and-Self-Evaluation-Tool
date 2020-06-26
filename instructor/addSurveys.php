@@ -257,7 +257,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     else
     {
       $emails = parse_pairings($pairing_mode, $file_string);
-      
+      echo var_dump($emails);
       // check for any errors
       if (isset($emails['error']))
       {

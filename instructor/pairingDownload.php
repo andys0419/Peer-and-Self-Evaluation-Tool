@@ -76,7 +76,7 @@ if ($result->num_rows == 0)
 }
 
 // finally, store information about survey pairings in a string
-$pairings = "";
+$pairings = "reviewer_email,reviewee_email\n";
 
 // get information about the pairings
 $stmt = $con->prepare('SELECT reviewer_email, teammate_email FROM reviewers WHERE survey_id=? ORDER BY id');
@@ -86,18 +86,12 @@ $result = $stmt->get_result();
 
 while ($row = $result->fetch_assoc())
 {
-  $pairings .= $row['reviewer_email'] . ", " . $row['teammate_email'] . ",\n";
-}
-
-// remove the trailing comma
-if (strlen($pairings) > 1)
-{
-  $pairings[-2] = " ";
+  $pairings .= $row['reviewer_email'] . "," . $row['teammate_email'] . "\n";
 }
 
 // generate the correct headers for the file download
-header('Content-Type: text/plain; charset=UTF-8');
-header('Content-Disposition: attachment; filename="survey-' . $sid . '-pairings.txt"');
+header('Content-Type: text/csv; charset=UTF-8');
+header('Content-Disposition: attachment; filename="survey-' . $sid . '-pairings.csv"');
 
 // ouput the data
 echo $pairings;
