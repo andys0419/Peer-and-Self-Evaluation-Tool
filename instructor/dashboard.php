@@ -32,7 +32,7 @@ $instructor->check_session($con, 0);
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../styles/header.css">
+    <link rel="stylesheet" type="text/css" href="../styles/nav-header.css">
     <title>UB CSE Peer Evaluation :: Dashboard</title>
 </head>
 <body>
@@ -40,20 +40,11 @@ $instructor->check_session($con, 0);
         <img src="../images/logo_UB.png" width="150" height="100" alt="UB Logo">
         <p style="font-size:250%;display:inline-block" >UB CSE Peer Evaluation</p>
   </div>
-  <div class="icon-bar">
-  <a class="active" href="dashboard.php"><i class="home"><img src="../icons/home.png" width="50" height="50" class="img-center">Home</i></a>
-
-  <a href="surveys.php"><i class="survey"><img src ="../icons/survey.png" width="50" height="50" class="img-center"> Surveys</i></a>
-  
-  <a href="question-banks.php" class="disable"><i class="question"><img src="../icons/check.png" width="50" height="50"  class="img-center"> Question Banks </i></a>
-  
-  <a href="courses.php"><i class="courses"><img src ="../icons/online-learning.png" width="50" height="50" class="img-center">courses</i></a>
-  
-  <a href="logout.php" class="disable"><i class="logout"><img src="../icons/logout.png" width="50" height="50"  class="img-center"> Logout </i></a>
-  
-<a class="disable"> <i class="hello">Welcome, <?php echo htmlspecialchars($instructor->name); ?></a></i>
-
-</div>
-
+  <div class="w3-bar w3-blue">
+    <a href="surveys.php" class="w3-bar-item w3-button w3-mobile">Surveys</a>
+    <a href="courses.php" class="w3-bar-item w3-button w3-mobile">Courses</a>
+    <form action="logout.php" method ="post"><input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" /><input class="w3-bar-item w3-button w3-mobile w3-right" type="submit" value="Logout"></form>
+    <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
+  </div>
 </body>
 </html>
