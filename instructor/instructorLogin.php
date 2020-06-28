@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
   {
     
     // generate the access code
-    $access_code = random_digits(7);
+    $access_code = random_string(10);
     
     // hash the password
     $hashed_access_code = password_hash($access_code, PASSWORD_BCRYPT);
