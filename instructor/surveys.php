@@ -199,7 +199,7 @@ foreach($courses as $course) {
           ?>
     </table>
     <h3>Expired Surveys</h3>
-    <table class="w3-table" border=1.0 style="width:100%">
+    <table class="w3-table w3-mobile" border=1.0 style="width:100%">
         <tr>
         <th>Course</th>
         <th>Evaluations Completed</th>

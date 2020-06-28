@@ -301,7 +301,7 @@ while ($row = $result->fetch_assoc())
       }
     ?>
     
-    <table style="width:100%;border:1px solid black;border-collapse:collapse;">
+    <table class="w3-table w3-mobile" border=1.0 style="width:100%">
       <tr>
       <th>Name</th>
       <th>Email</th>
