@@ -95,7 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         'From: Teamwork Evaluation Access Code Generator <apache@buffalo.edu>');
         
     // set the initial authorization cookie for 1 hour
-    setcookie(INIT_AUTH_COOKIE_NAME, bin2hex($initial_auth_cookie), time() + INIT_AUTH_TOKEN_EXPIRATION_SECONDS);
+    $c_options['expires'] = time() + INIT_AUTH_TOKEN_EXPIRATION_SECONDS;
+    $c_options['samesite'] = 'Lax';
+    setcookie(INIT_AUTH_COOKIE_NAME, bin2hex($initial_auth_cookie), $c_options);
     
     // store the access code, expiration, and authorization cookie into the database
     $stmt = $con->prepare('UPDATE instructors SET init_auth_id=?, otp=?, otp_expiration=? WHERE id=?');

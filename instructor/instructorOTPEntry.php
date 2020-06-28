@@ -66,7 +66,9 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') and ($instructor->init_auth_status !=
       
       // set the initial authorization cookie for 12 hours
       $session_expiration = time() + SESSION_TOKEN_EXPIRATION_SECONDS;
-      setcookie(SESSION_COOKIE_NAME, bin2hex($session_cookie), $session_expiration);
+      $c_options['expires'] = $session_expiration;
+      $c_options['samesite'] = 'Lax';
+      setcookie(SESSION_COOKIE_NAME, bin2hex($session_cookie), $c_options);
       
       // now, generate the CSRF token
       $csrf_token = bin2hex(random_bytes(TOKEN_SIZE));
