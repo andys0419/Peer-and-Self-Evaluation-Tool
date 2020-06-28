@@ -22,7 +22,7 @@ ON reviewers.survey_id = surveys.id INNER JOIN course on course.id = surveys.cou
   $stmt->bind_result($class_name,$surveys_id);
   $stmt->store_result();
   while ($stmt->fetch()){
-    $student_classes[$class_name] = $surveys_id;
+    $student_classes[htmlspecialchars($class_name)] = $surveys_id;
   }
   $_SESSION['student_classes'] = $student_classes;
 
@@ -93,7 +93,7 @@ ON reviewers.survey_id = surveys.id INNER JOIN course on course.id = surveys.cou
       <?php
         if(isset($_SESSION['student_classes'])) {
           foreach ($student_classes as $key => $value) {
-            echo ('<option value="' . $key .'">' . htmlspecialchars($key) .'</option>');
+            echo ('<option value="' . htmlspecialchars($key) .'">' . htmlspecialchars($key) .'</option>');
           }
         }
       ?>

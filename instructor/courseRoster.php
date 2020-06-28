@@ -269,7 +269,7 @@ while ($row = $result->fetch_assoc())
 <body>
     <div class="w3-container w3-center">
         <h2>Course Roster</h2>
-        <p><?php echo $course_info[0]['code'] . ' ' . $course_info[0]['name'] . ' - ' . SEMESTER_MAP_REVERSE[$course_info[0]['semester']] . ' ' . $course_info[0]['year'] ?></p>
+        <p><?php echo htmlspecialchars($course_info[0]['code']) . ' ' . htmlspecialchars($course_info[0]['name']) . ' - ' . htmlspecialchars(SEMESTER_MAP_REVERSE[$course_info[0]['semester']]) . ' ' . htmlspecialchars($course_info[0]['year']) ?></p>
     </div>
     
     <?php

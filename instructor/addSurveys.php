@@ -331,11 +331,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         foreach ($courses as $course) {
           if ($course_id == $course['id'])
           {
-            echo '<option value="' . $course['id'] . '" selected>' . $course['code'] . ' ' . $course['name'] . ' - ' . $course['semester'] . ' ' . $course['year'] . '</option>';
+            echo '<option value="' . $course['id'] . '" selected>' . htmlspecialchars($course['code']) . ' ' . htmlspecialchars($course['name']) . ' - ' . htmlspecialchars($course['semester']) . ' ' . htmlspecialchars($course['year']) . '</option>';
           }
           else
           {
-            echo '<option value="' . $course['id'] . '" >' . $course['code'] . ' ' . $course['name'] . ' - ' . $course['semester'] . ' ' . $course['year'] . '</option>';
+            echo '<option value="' . $course['id'] . '" >' . htmlspecialchars($course['code']) . ' ' . htmlspecialchars($course['name']) . ' - ' . htmlspecialchars($course['semester']) . ' ' . htmlspecialchars($course['year']) . '</option>';
           }
         }
         ?>
