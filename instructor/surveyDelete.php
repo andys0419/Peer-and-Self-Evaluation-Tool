@@ -152,21 +152,22 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../styles/courses.css">
+    <link rel="stylesheet" type="text/css" href="../styles/styles.css">
     <title>Delete Survey</title>
 </head>
 <body>
-
-    <div class="w3-bar w3-blue w3-mobile">
-      <a href="surveys.php" class="w3-bar-item w3-button w3-mobile">Surveys</a>
-      <!---Disabled href="question-banks.php"-->
-      <a class="w3-bar-item w3-button w3-mobile">Question Banks</a>
-      <a href="courses.php" class="w3-bar-item w3-button w3-mobile">Courses</a>
-      <!---Disabled href="logout.php"-->
-      <a class="w3-bar-item w3-button w3-mobile w3-right">Logout</a>
+<header>
+    <div class="w3-container">
+          <img src="../images/logo_UB.png" class="header-img" alt="UB Logo">
+          <h1 class="header-text">UB CSE Peer Evaluation System</h1>
     </div>
-
-
+    <div class="w3-bar w3-blue w3-mobile w3-border-blue">
+      <a href="surveys.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-left w3-border-white">Surveys</a>
+      <a href="courses.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-white">Courses</a>
+      <form action="logout.php" method ="post"><input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" /><input class="w3-bar-item w3-button w3-mobile w3-right w3-border-right w3-border-left w3-border-white" type="submit" value="Logout"></form>
+      <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
+    </div>
+</header>
 
     <div class="w3-container w3-center">
         <h2>Delete Survey</h2>

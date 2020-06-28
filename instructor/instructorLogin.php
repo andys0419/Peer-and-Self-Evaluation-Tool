@@ -121,14 +121,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../styles/login.css">
-    <title>UB CSE Peer Evaluation :: Instructor Login</title>
+    <link rel="stylesheet" type="text/css" href="../styles/styles.css">
+    <title>Instructor Login :: UB CSE Peer Evaluation System</title>
 </head>
 <body>
-    <div class="w3-bar w3-black" style="background-color: #100e0e">
-      <img src="../images/logo_UB.png" width="150" height="100" class="d-inline-block align-top" alt="UB Logo">
-      <p style="font-size:250%;display:inline-block" >UB CSE Peer Evaluation (Instructor Login)</p>
+<header>
+    <div class="w3-container">
+          <img src="../images/logo_UB.png" class="header-img" alt="UB Logo">
+          <h1 class="header-text">UB CSE Peer Evaluation System</h1>
     </div>
+    <div class="w3-bar w3-blue w3-mobile w3-border-blue">
+      <a class="w3-text-blue w3-bar-item">Placeholder</a>
+    </div>
+</header>
+
+<div class="w3-container w3-center">
+        <h2>Instructor Login</h2>
+</div>
     
     <div class="form-group">
       <p>Welcome! Please enter your UB email address in order to receive an access code to login.</p><br />
@@ -136,7 +145,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
       <form method="post" action="instructorLogin.php">
         <label for="email">Email Address:</label><br />
         <input class = "w3-input w3-border" type="text" id="email" placeholder="UBITname@buffalo.edu" name="email" /><br />
-        <input type="submit" class="w3-btn w3-dark-grey" value="Send Access Code" />
+        <input type="submit" class="w3-button w3-blue" value="Send Access Code" />
+        <a href="instructorOTPEntry.php"><button type='button' class="w3-button w3-blue" />I already have a valid access code.</button></a>
       </form>
     </div>
 </body>
