@@ -329,7 +329,7 @@ for ($i = 0; $i < $size; $i++)
       ?>
     </table>
     <br />
-    <a href="pairingDownload.php?survey=<?php echo $sid; ?>" target="_blank"><button class="w3-button w3-blue">Download Pairings as CSV File</button></a>
+    <a href="pairingDownload.php?survey=<?php echo $sid; ?>" target="_blank"><button class="w3-button w3-green">Download Pairings as CSV File</button></a>
     <hr />
     <div class="w3-container w3-center">
         <h2>Modify Survey Pairings</h2>
@@ -355,7 +355,7 @@ for ($i = 0; $i < $size; $i++)
         
         <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
         
-        <input type="submit" class="w3-button w3-blue" value="Modify Survey Pairings" />
+        <input type="submit" class="w3-button w3-green" value="Modify Survey Pairings" />
       </form>
     <?php else: ?>
       <div class="w3-container w3-red">

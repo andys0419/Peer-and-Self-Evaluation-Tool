@@ -104,7 +104,7 @@ while ($row = $result->fetch_assoc())
     </div>
     <br />
 <div class = "w3-center w3-mobile">
-    <a href="addCourses.php"><button class="w3-button w3-dark-grey">+ Add Course</button></a>
+    <a href="addCourses.php"><button class="w3-button w3-green">+ Add Course</button></a>
 </div> 
 
 

@@ -334,7 +334,7 @@ while ($row = $result->fetch_assoc())
         
         <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
         
-        <input type="submit" class="w3-button w3-blue" value="Modify Course Roster" />
+        <input type="submit" class="w3-button w3-green" value="Modify Course Roster" />
       </form>
     <?php else: ?>
       <div class="w3-container w3-red">

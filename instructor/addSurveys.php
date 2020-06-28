@@ -388,7 +388,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 
     <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
     
-    <input type="submit" class="w3-button w3-blue" value="Create Survey">
+    <input type="submit" class="w3-button w3-green" value="Create Survey">
 </form>
 </body>
 </html>

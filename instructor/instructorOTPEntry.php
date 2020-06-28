@@ -169,7 +169,7 @@ if (($_SERVER['REQUEST_METHOD'] == 'POST') and ($instructor->init_auth_status !=
       <form method="post" action="instructorOTPEntry.php">
         <label for="otp">Access Code:</label><br />
         <input class = "w3-input w3-border" type="text" id="otp" placeholder="**********" name="otp" /><br />
-        <input type="submit" class="w3-button w3-blue" value="Submit Access Code" />
+        <input type="submit" class="w3-button w3-green" value="Submit Access Code" />
         <a href="instructorLogin.php"><button type='button' class="w3-button w3-blue" />I need a new access code.</button></a>
       </form>
     </div>

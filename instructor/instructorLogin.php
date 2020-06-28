@@ -145,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
       <form method="post" action="instructorLogin.php">
         <label for="email">Email Address:</label><br />
         <input class = "w3-input w3-border" type="text" id="email" placeholder="UBITname@buffalo.edu" name="email" /><br />
-        <input type="submit" class="w3-button w3-blue" value="Send Access Code" />
+        <input type="submit" class="w3-button w3-green" value="Send Access Code" />
         <a href="instructorOTPEntry.php"><button type='button' class="w3-button w3-blue" />I already have a valid access code.</button></a>
       </form>
     </div>

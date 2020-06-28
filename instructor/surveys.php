@@ -218,7 +218,7 @@ foreach($courses as $course) {
     </div>
     <br />
 <div class = "w3-center w3-mobile">
-    <a href="addSurveys.php"><button class="w3-button w3-blue">+ Add Survey</button></a>
+    <a href="addSurveys.php"><button class="w3-button w3-green">+ Add Survey</button></a>
 </div> 
 </body>
 </html>
