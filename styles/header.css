@@ -1,0 +1,62 @@
+.icon-bar {
+  width: 100%;
+  background-color: #add8e6;
+  overflow: auto;
+}
+
+.icon-bar a {
+  float: left;
+  width: 10%;
+  text-align: center;
+  padding: 15px 0;
+  transition: all 0.3s ease;
+  color: white;
+  font-size: 1-px;
+}
+
+.icon-bar a:hover {
+  background-color: #7997a1;
+}
+
+.active {
+    background-color: #45565c;
+    pointer-events: none;
+    cursor: default
+}
+
+.img-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+} 
+    
+.disable{ 
+	pointer-events:none;
+	cursor: default
+ }
+
+i.hello{
+position: absolute;
+right: 0px;
+vertical-align:text-bottom
+}
+
+body {
+    background-color: #100e0e;
+    color: #FFFFFF; 
+}
+
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+
+
+
+
