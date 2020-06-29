@@ -141,7 +141,7 @@ foreach($courses as $course) {
       <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
     </div>
 </header>
-
+<div class="main-content">
 
     <div class="w3-container w3-center">
         <h2>Surveys</h2>
@@ -166,7 +166,7 @@ foreach($courses as $course) {
  
     <div class="w3-responsive">
     <h3>Upcoming Surveys</h3>
-    <table class="w3-table w3-mobile" border=1.0 style="width:100%">
+    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
         <tr>
         <th>Course</th>
         <th>Start Date and Time</th>
@@ -182,7 +182,7 @@ foreach($courses as $course) {
           ?>
     </table>
     <h3>Currently Active Surveys</h3>
-    <table class="w3-table" border=1.0 style="width:100%">
+    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
         <tr>
         <th>Course</th>
         <th>Evaluations Completed</th>
@@ -199,7 +199,7 @@ foreach($courses as $course) {
           ?>
     </table>
     <h3>Expired Surveys</h3>
-    <table class="w3-table w3-mobile" border=1.0 style="width:100%">
+    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
         <tr>
         <th>Course</th>
         <th>Evaluations Completed</th>
@@ -220,5 +220,6 @@ foreach($courses as $course) {
 <div class = "w3-center w3-mobile">
     <a href="addSurveys.php"><button class="w3-button w3-green">+ Add Survey</button></a>
 </div> 
+</div>
 </body>
 </html>

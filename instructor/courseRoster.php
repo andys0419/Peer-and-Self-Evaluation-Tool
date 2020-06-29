@@ -279,7 +279,7 @@ while ($row = $result->fetch_assoc())
       <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
     </div>
 </header>
-
+<div class="main-content">
 
     <div class="w3-container w3-center">
         <h2>Course Roster</h2>
@@ -301,7 +301,7 @@ while ($row = $result->fetch_assoc())
       }
     ?>
     
-    <table class="w3-table w3-mobile" border=1.0 style="width:100%">
+    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
       <tr>
       <th>Name</th>
       <th>Email</th>
@@ -314,7 +314,9 @@ while ($row = $result->fetch_assoc())
       ?>
     </table>
     <br />
-    <a href="rosterDownload.php?course=<?php echo $cid; ?>" target="_blank"><button class="w3-button w3-blue">Download Course Roster as CSV File</button></a>
+    <div class="w3-container w3-center">
+      <a href="rosterDownload.php?course=<?php echo $cid; ?>" target="_blank"><button class="w3-button w3-blue">Download Course Roster as CSV File</button></a>
+    </div>
     <hr />
     <div class="w3-container w3-center">
         <h2>Modify Course Roster</h2>
@@ -342,6 +344,6 @@ while ($row = $result->fetch_assoc())
       </div>
     <?php endif; ?>
     <br />
-
+</div>
 </body>
 </html> 

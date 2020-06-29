@@ -223,6 +223,7 @@ for ($i = 0; $i < $r_size; $i++)
       <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
     </div>
 </header>
+<div class="main-content">
     <div class="w3-container w3-center">
         <h2>Download Survey Results</h2>
         <a href="resultsDownload.php?survey=<?php echo $sid; ?>&type=raw" target="_blank"><button class="w3-button w3-blue">Download Raw Survey Results</button></a>
@@ -233,7 +234,7 @@ for ($i = 0; $i < $r_size; $i++)
     <div class="w3-container w3-center">
         <h2>Raw Survey Results</h2>
     </div>
-    <table class="w3-table w3-mobile" border=1.0 style="width:100%">
+    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
         <tr>
         <th>Reviewer Email (Name)</th>
         <th>Reviewee Email (Name)</th>
@@ -274,7 +275,7 @@ for ($i = 0; $i < $r_size; $i++)
     <div class="w3-container w3-center">
         <h2>Average Normalized Survey Results</h2>
     </div>
-    <table class="w3-table w3-mobile" border=1.0 style="width:100%">
+    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
         <tr>
         <th>Reviewee Email (Name)</th>
         <th>Average Normalized Score</th>
@@ -296,5 +297,6 @@ for ($i = 0; $i < $r_size; $i++)
           }
           ?>
     </table>
+</div>
 </body>
 </html>

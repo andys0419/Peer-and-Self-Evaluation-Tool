@@ -69,7 +69,7 @@ while ($row = $result->fetch_assoc())
       <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
     </div>
 </header>
-
+<div class="main-content">
     <div class="w3-container w3-center">
         <h2>Instructor Courses</h2>
     </div>
@@ -85,8 +85,8 @@ while ($row = $result->fetch_assoc())
       
     ?>
     
-    <div class="w3-responsive">
-    <table class="w3-table w3-mobile" border=1 style="width:100%">
+
+    <table class="w3-table w3-mobile w3-centered" border=1 style="width:100%">
       <tr>
       <th>Code</th>
       <th>Name</th>
@@ -101,12 +101,12 @@ while ($row = $result->fetch_assoc())
         }
       ?>
     </table>
-    </div>
+
     <br />
 <div class = "w3-center w3-mobile">
     <a href="addCourses.php"><button class="w3-button w3-green">+ Add Course</button></a>
 </div> 
-
+</div>
 
 </body>
 </html> 

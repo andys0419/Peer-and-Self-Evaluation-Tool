@@ -296,7 +296,7 @@ for ($i = 0; $i < $size; $i++)
       <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
     </div>
 </header>
-
+<div class="main-content">
     <div class="w3-container w3-center">
         <h2>Survey Pairings</h2>
     </div>
@@ -316,10 +316,10 @@ for ($i = 0; $i < $size; $i++)
       }
     ?>
     
-    <table class="w3-table w3-mobile" border=1.0 style="width:100%">
+    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
       <tr>
-      <th>Reviewer</th>
-      <th>Reviewee</th>
+      <th>Reviewer Name (Email)</th>
+      <th>Reviewee Name (Email)</th>
       </tr>
       <?php
         foreach ($pairings as $pair)
@@ -329,7 +329,9 @@ for ($i = 0; $i < $size; $i++)
       ?>
     </table>
     <br />
-    <a href="pairingDownload.php?survey=<?php echo $sid; ?>" target="_blank"><button class="w3-button w3-blue">Download Pairings as CSV File</button></a>
+    <div class="w3-container w3-center">
+      <a href="pairingDownload.php?survey=<?php echo $sid; ?>" target="_blank"><button class="w3-button w3-blue">Download Pairings as CSV File</button></a>
+    </div>
     <hr />
     <div class="w3-container w3-center">
         <h2>Modify Survey Pairings</h2>
@@ -363,6 +365,6 @@ for ($i = 0; $i < $size; $i++)
       </div>
     <?php endif; ?>
     <br />
-
+</div>
 </body>
 </html> 

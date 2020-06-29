@@ -168,7 +168,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
       <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
     </div>
 </header>
-
+<div class="main-content">
     <div class="w3-container w3-center">
         <h2>Delete Survey</h2>
     </div>
@@ -186,5 +186,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         <input type="submit" class="w3-button w3-red" value="Delete Survey" />
       </form>
     <br />
+</div>
 </body>
 </html> 
