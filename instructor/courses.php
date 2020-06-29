@@ -44,17 +44,14 @@ while ($row = $result->fetch_assoc())
 }
 
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="../styles/styles.css">
-    <title>Courses</title>
+    <title>Courses :: UB CSE Peer Evaluation System</title>
 </head>
 <body>
 <header>
@@ -71,7 +68,7 @@ while ($row = $result->fetch_assoc())
 </header>
 <div class="main-content">
     <div class="w3-container w3-center">
-        <h2>Instructor Courses</h2>
+        <h2>Courses</h2>
     </div>
 
     <?php
