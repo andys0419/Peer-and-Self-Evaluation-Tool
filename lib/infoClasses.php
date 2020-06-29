@@ -212,7 +212,7 @@ class InstructorInfo
     if ($action == 1)
     {
       http_response_code(302);   
-      header("Location: dashboard.php");
+      header("Location: surveys.php");
       exit();
     }
       
