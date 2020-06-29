@@ -238,38 +238,49 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
   }
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../styles/addCourses.css">
-    <title>Add Courses</title>
+    <link rel="stylesheet" type="text/css" href="../styles/styles.css">
+    <title>Add New Course :: UB CSE Peer Evaluation System</title>
 </head>
 <body>
+  <header>
+    <div class="w3-container">
+          <img src="../images/logo_UB.png" class="header-img" alt="UB Logo">
+          <h1 class="header-text">UB CSE Peer Evaluation System</h1>
+    </div>
+    <div class="w3-bar w3-blue w3-mobile w3-border-blue">
+      <a href="surveys.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-left w3-border-white">Surveys</a>
+      <a href="courses.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-white">Courses</a>
+      <form action="logout.php" method ="post"><input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" /><input class="w3-bar-item w3-button w3-mobile w3-right w3-border-right w3-border-left w3-border-white" type="submit" value="Logout"></form>
+      <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
+    </div>
+  </header>
+<div class="main-content">
+
 
     <div class="w3-container w3-center">
-        <h2>Course Information</h2>
+        <h2>Add New Course</h2>
     </div>
 
 <span class="w3-card w3-red"><?php if(isset($errorMsg["duplicate"])) {echo $errorMsg["duplicate"];} ?></span>
-<form action="addCourses.php" method ="post" class="w3-container" enctype="multipart/form-data">
+<form action="addCourses.php" method ="post" enctype="multipart/form-data" style="width:60%" class="w3-container w3-mobile">
     <span class="w3-card w3-red"><?php if(isset($errorMsg["course-code"])) {echo $errorMsg["course-code"];} ?></span><br />
     <label for="course-code">Course Code:</label><br>
-    <input type="text" id="course-code" class="w3-input w3-border" style="width:30%" name="course-code" placeholder="e.g, CSE442" <?php if ($course_code) {echo 'value="' . htmlspecialchars($course_code) . '"';} ?>><br>
+    <input type="text" id="course-code" class="w3-input w3-border" name="course-code" placeholder="e.g, CSE442" <?php if ($course_code) {echo 'value="' . htmlspecialchars($course_code) . '"';} ?>><br>
     
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["course-name"])) {echo $errorMsg["course-name"];} ?></span><br />
     <label for="course-name">Course Name:</label><br>
-    <input type="text" id="course-name" class="w3-input w3-border" style="width:30%" name="course-name" placeholder="e.g, Software Engineering Concepts" <?php if ($course_name) {echo 'value="' . htmlspecialchars($course_name) . '"';} ?>><br>
+    <input type="text" id="course-name" class="w3-input w3-border" name="course-name" placeholder="e.g, Software Engineering Concepts" <?php if ($course_name) {echo 'value="' . htmlspecialchars($course_name) . '"';} ?>><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["semester"])) {echo $errorMsg["semester"];} ?></span><br />
     <label for="semester">Course Semester:</label><br>
-    <select class="w3-select w3-border" style="width:30%" name="semester">
+    <select class="w3-select w3-border" name="semester">
         <option value="" disabled <?php if (!$semester) {echo 'selected';} ?>>Choose semester:</option>
         <option value="fall" <?php if ($semester == 4) {echo 'selected';} ?>>Fall</option>
         <option value="winter" <?php if ($semester == 1) {echo 'selected';} ?>>Winter</option>
@@ -279,14 +290,16 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["course-year"])) {echo $errorMsg["course-year"];} ?></span><br />
     <label for="year">Course Year:</label><br>
-    <input type="number" id="year" class="w3-input w3-border" style="width:30%" name="course-year" placeholder="e.g, 2020" <?php if ($course_year) {echo 'value="' . htmlspecialchars($course_year) . '"';} ?>><br>
+    <input type="number" id="year" class="w3-input w3-border" name="course-year" placeholder="e.g, 2020" <?php if ($course_year) {echo 'value="' . htmlspecialchars($course_year) . '"';} ?>><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["roster-file"])) {echo $errorMsg["roster-file"];} ?></span><br />
     <label for="roster-file">Roster (CSV File):</label><br>
-    <input type="file" id="roster-file" class="w3-input w3-border" style="width:30%" name="roster-file"><br>
+    <input type="file" id="roster-file" class="w3-input w3-border" name="roster-file"><br><br />
     
     <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
     
-    <input class="w3-button w3-blue" type="submit" value="Add Course">
+    <input class="w3-button w3-green" type="submit" value="Add Course">
 </form>
+</div>
+</body>
 </html>

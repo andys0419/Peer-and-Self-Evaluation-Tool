@@ -123,27 +123,23 @@ foreach($courses as $course) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../styles/surveys.css">
-    <link rel="stylesheet" type="text/css" href="../styles/header.css">
-    <title>Surveys</title>
+    <link rel="stylesheet" type="text/css" href="../styles/styles.css">
+    <title>Surveys :: UB CSE Peer Evaluation System</title>
 </head>
 <body>
-
- <div class="icon-bar">
-  <a href="dashboard.php"><i class="home"><img src="../icons/home.png" width="50" height="50" class="img-center">Home</i></a>
-
-  <a class="active" href="surveys.php"><i class="disable"><img src ="../icons/survey.png" width="50" height="50" class="img-center"> Surveys</i></a>
-  
-  <a href="question-banks.php" class="disable"><i class="question"><img src="../icons/check.png" width="50" height="50"  class="img-center"> Question Banks </i></a>
-  
-  <a href="courses.php"><i class="courses"><img src ="../icons/online-learning.png" width="50" height="50" class="img-center">courses</i></a>
-  
-  <a href="logout.php" class="disable"><i class="logout"><img src="../icons/logout.png" width="50" height="50"  class="img-center"> Logout </i></a>
-
-</div>
-
+<header>
+    <div class="w3-container">
+          <img src="../images/logo_UB.png" class="header-img" alt="UB Logo">
+          <h1 class="header-text">UB CSE Peer Evaluation System</h1>
+    </div>
+    <div class="w3-bar w3-blue w3-mobile w3-border-blue">
+      <a href="surveys.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-left w3-border-white">Surveys</a>
+      <a href="courses.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-white">Courses</a>
+      <form action="logout.php" method ="post"><input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" /><input class="w3-bar-item w3-button w3-mobile w3-right w3-border-right w3-border-left w3-border-white" type="submit" value="Logout"></form>
+      <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
+    </div>
+</header>
+<div class="main-content">
 
     <div class="w3-container w3-center">
         <h2>Surveys</h2>
@@ -165,8 +161,10 @@ foreach($courses as $course) {
       }
       
     ?>
+ 
+    <div class="w3-responsive">
     <h3>Upcoming Surveys</h3>
-    <table class="w3-table" border=1.0 style="width:100%">
+    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
         <tr>
         <th>Course</th>
         <th>Start Date and Time</th>
@@ -182,7 +180,7 @@ foreach($courses as $course) {
           ?>
     </table>
     <h3>Currently Active Surveys</h3>
-    <table class="w3-table" border=1.0 style="width:100%">
+    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
         <tr>
         <th>Course</th>
         <th>Evaluations Completed</th>
@@ -199,7 +197,7 @@ foreach($courses as $course) {
           ?>
     </table>
     <h3>Expired Surveys</h3>
-    <table class="w3-table" border=1.0 style="width:100%">
+    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
         <tr>
         <th>Course</th>
         <th>Evaluations Completed</th>
@@ -215,9 +213,11 @@ foreach($courses as $course) {
           }
           ?>
     </table>
+    </div>
     <br />
-<div class = "w3-center">
-    <a href="addSurveys.php"><button class="w3-button w3-blue">+ Add Survey</button></a>
+<div class = "w3-center w3-mobile">
+    <a href="addSurveys.php"><button class="w3-button w3-green">+ Add Survey</button></a>
 </div> 
+</div>
 </body>
-</html> 
+</html>

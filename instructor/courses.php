@@ -44,39 +44,31 @@ while ($row = $result->fetch_assoc())
 }
 
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../styles/courses.css">
-      <link rel="stylesheet" type="text/css" href="../styles/header.css">
-    <title>Courses</title>
+    <link rel="stylesheet" type="text/css" href="../styles/styles.css">
+    <title>Courses :: UB CSE Peer Evaluation System</title>
 </head>
 <body>
-
- <div class="icon-bar">
-  <a href="dashboard.php"><i class="home"><img src="../icons/home.png" width="50" height="50" class="img-center">Home</i></a>
-
-  <a href="surveys.php"><i class="survey"><img src ="../icons/survey.png" width="50" height="50" class="img-center"> Surveys</i></a>
-  
-  <a href="question-banks.php" class="disable"><i class="question"><img src="../icons/check.png" width="50" height="50"  class="img-center"> Question Banks </i></a>
-  
-  <a class="active" href="courses.php"><i class="disable"><img src ="../icons/online-learning.png" width="50" height="50" class="img-center">courses</i></a>
-  
-  <a href="logout.php" class="disable"><i class="logout"><img src="../icons/logout.png" width="50" height="50"  class="img-center"> Logout </i></a>
-
-</div>
-
-
-
-
+<header>
+    <div class="w3-container">
+          <img src="../images/logo_UB.png" class="header-img" alt="UB Logo">
+          <h1 class="header-text">UB CSE Peer Evaluation System</h1>
+    </div>
+    <div class="w3-bar w3-blue w3-mobile w3-border-blue">
+      <a href="surveys.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-left w3-border-white">Surveys</a>
+      <a href="courses.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-white">Courses</a>
+      <form action="logout.php" method ="post"><input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" /><input class="w3-bar-item w3-button w3-mobile w3-right w3-border-right w3-border-left w3-border-white" type="submit" value="Logout"></form>
+      <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
+    </div>
+</header>
+<div class="main-content">
     <div class="w3-container w3-center">
-        <h2>Instructor Courses</h2>
+        <h2>Courses</h2>
     </div>
 
     <?php
@@ -90,7 +82,8 @@ while ($row = $result->fetch_assoc())
       
     ?>
     
-    <table border=1 style=width:100%>
+
+    <table class="w3-table w3-mobile w3-centered" border=1 style="width:100%">
       <tr>
       <th>Code</th>
       <th>Name</th>
@@ -105,11 +98,12 @@ while ($row = $result->fetch_assoc())
         }
       ?>
     </table>
-    <br />
-<div class = "center">
-    <a href="addCourses.php"><button class="w3-button w3-dark-grey">+ Add Course</button></a>
-</div> 
 
+    <br />
+<div class = "w3-center w3-mobile">
+    <a href="addCourses.php"><button class="w3-button w3-green">+ Add Course</button></a>
+</div> 
+</div>
 
 </body>
 </html> 

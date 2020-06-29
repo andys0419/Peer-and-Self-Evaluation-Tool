@@ -261,12 +261,24 @@ while ($row = $result->fetch_assoc())
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../styles/roster-pairing.css">
-    <title>Course Roster</title>
+    <link rel="stylesheet" type="text/css" href="../styles/styles.css">
+    <title>Course Roster :: UB CSE Peer Evaluation System</title>
 </head>
 <body>
+<header>
+    <div class="w3-container">
+          <img src="../images/logo_UB.png" class="header-img" alt="UB Logo">
+          <h1 class="header-text">UB CSE Peer Evaluation System</h1>
+    </div>
+    <div class="w3-bar w3-blue w3-mobile w3-border-blue">
+      <a href="surveys.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-left w3-border-white">Surveys</a>
+      <a href="courses.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-white">Courses</a>
+      <form action="logout.php" method ="post"><input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" /><input class="w3-bar-item w3-button w3-mobile w3-right w3-border-right w3-border-left w3-border-white" type="submit" value="Logout"></form>
+      <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
+    </div>
+</header>
+<div class="main-content">
+
     <div class="w3-container w3-center">
         <h2>Course Roster</h2>
         <p><?php echo htmlspecialchars($course_info[0]['code']) . ' ' . htmlspecialchars($course_info[0]['name']) . ' - ' . htmlspecialchars(SEMESTER_MAP_REVERSE[$course_info[0]['semester']]) . ' ' . htmlspecialchars($course_info[0]['year']) ?></p>
@@ -287,7 +299,7 @@ while ($row = $result->fetch_assoc())
       }
     ?>
     
-    <table style="width:100%;border:1px solid black;border-collapse:collapse;">
+    <table class="w3-table w3-mobile w3-centered" border=1.0 style="width:100%">
       <tr>
       <th>Name</th>
       <th>Email</th>
@@ -300,7 +312,9 @@ while ($row = $result->fetch_assoc())
       ?>
     </table>
     <br />
-    <a href="rosterDownload.php?course=<?php echo $cid; ?>" target="_blank"><button class="w3-button w3-blue">Download Course Roster as CSV File</button></a>
+    <div class="w3-container w3-center">
+      <a href="rosterDownload.php?course=<?php echo $cid; ?>" target="_blank"><button class="w3-button w3-blue">Download Course Roster as CSV File</button></a>
+    </div>
     <hr />
     <div class="w3-container w3-center">
         <h2>Modify Course Roster</h2>
@@ -320,7 +334,7 @@ while ($row = $result->fetch_assoc())
         
         <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
         
-        <input type="submit" class="w3-button w3-blue" value="Modify Course Roster" />
+        <input type="submit" class="w3-button w3-green" value="Modify Course Roster" />
       </form>
     <?php else: ?>
       <div class="w3-container w3-red">
@@ -328,6 +342,6 @@ while ($row = $result->fetch_assoc())
       </div>
     <?php endif; ?>
     <br />
-
+</div>
 </body>
 </html> 

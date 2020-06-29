@@ -303,29 +303,38 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
   
 }
 ?>
-
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-blue.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="../styles/addSurveys.css">
-    <title>Add Surveys</title>
+    <link rel="stylesheet" type="text/css" href="../styles/styles.css">
+    <title>Create New Survey :: UB CSE Peer Evaluation System</title>
 </head>
 <body>
+<header>
+    <div class="w3-container">
+          <img src="../images/logo_UB.png" class="header-img" alt="UB Logo">
+          <h1 class="header-text">UB CSE Peer Evaluation System</h1>
+    </div>
+    <div class="w3-bar w3-blue w3-mobile w3-border-blue">
+      <a href="surveys.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-left w3-border-white">Surveys</a>
+      <a href="courses.php" class="w3-bar-item w3-button w3-mobile w3-border-right w3-border-white">Courses</a>
+      <form action="logout.php" method ="post"><input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" /><input class="w3-bar-item w3-button w3-mobile w3-right w3-border-right w3-border-left w3-border-white" type="submit" value="Logout"></form>
+      <span class="w3-bar-item w3-mobile w3-right">Welcome, <?php echo htmlspecialchars($instructor->name); ?></span>
+    </div>
+</header>
+<div class="main-content">
+  <div class="w3-container w3-center">
+    <h2>Create New Survey</h2>
+  </div>
 
-<div class="w3-container w3-center">
-    <h2>Survey Information</h2>
-</div>
 
-
-<form action="addSurveys.php" method ="post" enctype="multipart/form-data" class="w3-container">
+<form action="addSurveys.php" method ="post" enctype="multipart/form-data" style="width:60%" class="w3-container w3-mobile">
     <span class="w3-card w3-red"><?php if(isset($errorMsg["course-id"])) {echo $errorMsg["course-id"];} ?></span><br />
     <label for="course-id">Course:</label><br>
-    <select id="course-id" class="w3-select w3-border" style="width:61%" name="course-id"><?php if ($course_id) {echo 'value="' . htmlspecialchars($course_id) . '"';} ?>
+    <select id="course-id" class="w3-select w3-border" name="course-id"><?php if ($course_id) {echo 'value="' . htmlspecialchars($course_id) . '"';} ?>
         <option value="-1" disabled <?php if (!$course_id) {echo 'selected';} ?>>Select Course</option>
         <?php
         foreach ($courses as $course) {
@@ -341,42 +350,37 @@ if($_SERVER['REQUEST_METHOD'] == 'POST')
         ?>
     </select><br><br>
     
-    <span class="w3-card w3-red"><?php if(isset($errorMsg["rubric-id"])) {echo $errorMsg["rubric-id"];} ?></span><br />
-    <label for="rubric-id">Question Bank:</label><br>
-    <select class="w3-select w3-border" style="width:61%" name="rubric-id" id="rubric-id" disabled>
-        <option value="0" selected>Default</option>
-    </select><br><br>
-
     <span class="w3-card w3-red"><?php if(isset($errorMsg["start-date"])) {echo $errorMsg["start-date"];} ?></span><br />
     <label for="start-date">Start Date:</label><br>
-    <input type="date" id="start-date" class="w3-input w3-border" style="width:61%" name="start-date" <?php if ($start_date) {echo 'value="' . htmlspecialchars($start_date) . '"';} ?>><br>
+    <input type="date" id="start-date" class="w3-input w3-border" name="start-date" <?php if ($start_date) {echo 'value="' . htmlspecialchars($start_date) . '"';} ?>><br>
     
     <span class="w3-card w3-red"><?php if(isset($errorMsg["start-time"])) {echo $errorMsg["start-time"];} ?></span><br />
     <label for="start-time">Start time:</label><br>
-    <input type="time" id="start-time" class="w3-input w3-border" style="width:61%" name="start-time" <?php if ($start_time) {echo 'value="' . htmlspecialchars($start_time) . '"';} ?>><br>
+    <input type="time" id="start-time" class="w3-input w3-border" name="start-time" <?php if ($start_time) {echo 'value="' . htmlspecialchars($start_time) . '"';} ?>><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["end-date"])) {echo $errorMsg["end-date"];} ?></span><br />
     <label for="end-date">End Date:</label><br>
-    <input type="date" id="end-date" class="w3-input w3-border" style="width:61%" name="end-date" <?php if ($end_date) {echo 'value="' . htmlspecialchars($end_date) . '"';} ?>><br>
+    <input type="date" id="end-date" class="w3-input w3-border" name="end-date" <?php if ($end_date) {echo 'value="' . htmlspecialchars($end_date) . '"';} ?>><br>
     
     <span class="w3-card w3-red"><?php if(isset($errorMsg["end-time"])) {echo $errorMsg["end-time"];} ?></span><br />
     <label for="end-time">End time:</label><br>
-    <input type="time" id="end-time" class="w3-input w3-border" style="width:61%" name="end-time" <?php if ($end_time) {echo 'value="' . htmlspecialchars($end_time) . '"';} ?>><br>
+    <input type="time" id="end-time" class="w3-input w3-border" name="end-time" <?php if ($end_time) {echo 'value="' . htmlspecialchars($end_time) . '"';} ?>><br>
 
     <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-mode"])) {echo $errorMsg["pairing-mode"];} ?></span><br />
     <label for="pairing-mode">Pairing File Mode:</label><br>
-    <select id="pairing-mode" class="w3-select w3-border" style="width:61%" name="pairing-mode">
+    <select id="pairing-mode" class="w3-select w3-border" name="pairing-mode">
         <option value="1" <?php if (!$pairing_mode) {echo 'selected';} ?>>Raw</option>
         <option value="2" <?php if ($pairing_mode == 2) {echo 'selected';} ?>>Team</option>
     </select><br><br>
     
     <span class="w3-card w3-red"><?php if(isset($errorMsg["pairing-file"])) {echo $errorMsg["pairing-file"];} ?></span><br />
     <label for="pairing-file">Pairings (CSV File):</label><br>
-    <input type="file" id="pairing-file" class="w3-input w3-border" style="width:61%" name="pairing-file"><br>
+    <input type="file" id="pairing-file" class="w3-input w3-border" name="pairing-file"><br><br />
 
     <input type="hidden" name="csrf-token" value="<?php echo $instructor->csrf_token; ?>" />
     
-    <input type="submit" class="w3-button w3-blue" value="Create Survey">
+    <input type="submit" class="w3-button w3-green" value="Create Survey">
 </form>
+</div>
 </body>
 </html>
