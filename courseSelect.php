@@ -6,7 +6,7 @@
   require "lib/constants.php";
 
   if(!isset($_SESSION['id'])) {
-    header("Location: ".SITE_HOME."index.php");
+    header("Location: index.php");
     exit();
   }
   $email = $_SESSION['email'];
@@ -15,14 +15,14 @@
   require "lib/database.php";
   $con = connectToDatabase();
   $student_classes = array();
-  $stmt = $con->prepare('SELECT DISTINCT course.name, surveys.id FROM `teammates`  INNER JOIN surveys
-ON teammates.survey_id = surveys.id INNER JOIN course on course.id = surveys.course_id where teammates.student_id =? AND surveys.expiration_date > NOW() AND surveys.start_date <= NOW()');
+  $stmt = $con->prepare('SELECT DISTINCT course.name, surveys.id FROM `reviewers`  INNER JOIN surveys
+ON reviewers.survey_id = surveys.id INNER JOIN course on course.id = surveys.course_id where reviewers.reviewer_id=? AND surveys.expiration_date > NOW() AND surveys.start_date <= NOW()');
   $stmt->bind_param('i', $student_ID);
   $stmt->execute();
   $stmt->bind_result($class_name,$surveys_id);
   $stmt->store_result();
   while ($stmt->fetch()){
-    $student_classes[$class_name] = $surveys_id;
+    $student_classes[htmlspecialchars($class_name)] = $surveys_id;
   }
   $_SESSION['student_classes'] = $student_classes;
 
@@ -93,7 +93,7 @@ ON teammates.survey_id = surveys.id INNER JOIN course on course.id = surveys.cou
       <?php
         if(isset($_SESSION['student_classes'])) {
           foreach ($student_classes as $key => $value) {
-            echo ('<option value="' . $key .'">' . $key .'</option>');
+            echo ('<option value="' . htmlspecialchars($key) .'">' . htmlspecialchars($key) .'</option>');
           }
         }
       ?>

@@ -18,8 +18,42 @@ function parse_pairings($mode, $data_fields)
       return $split;
     }
     
-    // split on the comma
-    $split = explode(",", $data_fields);
+    // split be newlines
+    $lines = explode("\n", $data_fields);
+    
+    // examine each line or record
+    $line_count = count($lines);
+    
+    for ($j = 0; $j < $line_count; $j++)
+    {
+      
+      // skip over blank lines
+      $lines[$j] = trim($lines[$j]);
+      if (empty($lines[$j]))
+      {
+        continue;
+      }
+      
+      // split on the comma
+      $temp_split = explode(",", $lines[$j]);
+      $size = count($temp_split);
+      
+      // remove whitespace from each entry and reject if any fields are blank
+      for ($i = 0; $i < $size; $i++)
+      {
+        $temp_split[$i] = trim($temp_split[$i]);
+        
+        if (empty($temp_split[$i]))
+        {
+          $split['error'] = 'Input CSV file cannot have any blank fields.';
+          return $split;
+        }
+        
+        // add the fields to the array
+        array_push($split, $temp_split[$i]);
+      }
+      
+    }
     
     // reject if there are not an even number of fields
     $size = count($split);
@@ -27,18 +61,6 @@ function parse_pairings($mode, $data_fields)
     {
       $split['error'] = 'Input CSV file must have an even number of fields for raw mode.';
       return $split;
-    }
-    
-    // remove whitespace from each entry and reject if any fields are blank
-    for ($i = 0; $i < $size; $i++)
-    {
-      $split[$i] = trim($split[$i]);
-      
-      if (empty($split[$i]))
-      {
-        $split['error'] = 'Input CSV file cannot have any blank fields.';
-        return $split;
-      }
     }
     
     return $split;
@@ -103,9 +125,43 @@ function parse_pairings($mode, $data_fields)
       $split['error'] = 'Input CSV file cannot be blank.';
       return $split;
     }
-
-    // split on the comma
-    $split = explode(",", $data_fields);
+    
+    // split be newlines
+    $lines = explode("\n", $data_fields);
+    
+    // examine each line or record
+    $line_count = count($lines);
+    
+    for ($j = 0; $j < $line_count; $j++)
+    {
+      
+      // skip over blank lines
+      $lines[$j] = trim($lines[$j]);
+      if (empty($lines[$j]))
+      {
+        continue;
+      }
+      
+      // split on the comma
+      $temp_split = explode(",", $lines[$j]);
+      $size = count($temp_split);
+      
+      // remove whitespace from each entry and reject if any fields are blank
+      for ($i = 0; $i < $size; $i++)
+      {
+        $temp_split[$i] = trim($temp_split[$i]);
+        
+        if (empty($temp_split[$i]))
+        {
+          $split['error'] = 'Input CSV file cannot have any blank fields.';
+          return $split;
+        }
+        
+        // add the fields to the array
+        array_push($split, $temp_split[$i]);
+      }
+      
+    }
     
     // reject if there are not an even number of fields
     $size = count($split);
@@ -115,17 +171,9 @@ function parse_pairings($mode, $data_fields)
       return $split;
     }
     
-    // remove whitespace from each entry and reject if any fields are blank
+    // reject invalid email and unprintable names
     for ($i = 0; $i < $size; $i += 2)
     {
-      $split[$i] = trim($split[$i]);
-      $split[$i + 1] = trim($split[$i + 1]);
-      
-      if (empty($split[$i]) or empty($split[$i + 1]))
-      {
-        $split['error'] = 'Input CSV file cannot have any blank fields.';
-        return $split;
-      }
 
       if (!ctype_print($split[$i]))
       {

@@ -58,7 +58,7 @@ if ($result->num_rows == 0)
 }
 
 // finally, store information about course roster in a string
-$roster = "";
+$roster = "student_name,student_email\n";
 
 // get information about the pairings
 $stmt = $con->prepare('SELECT roster.student_id, students.name, students.email FROM roster JOIN students ON roster.student_id=students.student_id WHERE roster.course_id=? ORDER BY roster.id');
@@ -68,18 +68,12 @@ $result = $stmt->get_result();
 
 while ($row = $result->fetch_assoc())
 {
-  $roster .= $row['name'] . ", " . $row['email'] . ",\n";
-}
-
-// remove the trailing comma
-if (strlen($roster) > 1)
-{
-  $roster[-2] = " ";
+  $roster .= $row['name'] . "," . $row['email'] . "\n";
 }
 
 // generate the correct headers for the file download
-header('Content-Type: text/plain; charset=UTF-8');
-header('Content-Disposition: attachment; filename="course-' . $cid . '-roster.txt"');
+header('Content-Type: text/csv; charset=UTF-8');
+header('Content-Disposition: attachment; filename="course-' . $cid . '-roster.csv"');
 
 // ouput the data
 echo $roster;
