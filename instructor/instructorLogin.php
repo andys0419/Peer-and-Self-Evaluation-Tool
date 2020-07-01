@@ -147,5 +147,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
         <a href="instructorOTPEntry.php"><button type='button' class="w3-button w3-blue" />I already have a valid access code.</button></a>
       </form>
     </div>
+<footer class="w3-bar w3-blue w3-mobile w3-border-blue"style="position:fixed;bottom:0">
+  <span class="w3-bar-item">Instructor-Side of System Developed by Vlad Vasiuk, Warren Green, Andy Shi, and Matthew Wiewiorski</span>
+</footer>
 </body>
 </html>
