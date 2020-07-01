@@ -148,7 +148,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
       </form>
     </div>
 <footer class="w3-bar w3-blue w3-mobile w3-border-blue"style="position:fixed;bottom:0">
-  <span class="w3-bar-item">Instructor-Side of System Developed by Vlad Vasiuk, Warren Green, Andy Shi, and Matthew Wiewiorski</span>
+  <span class="w3-bar-item">Instructor-Side of System Developed by Warren Green, Andy Shi, and Matthew Wiewiorski</span>
 </footer>
 </body>
 </html>
